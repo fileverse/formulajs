@@ -1,6 +1,10 @@
 {
   "name": "@fileverse-dev/formulajs",
+<<<<<<< Updated upstream
   "version": "4.4.11-mod-7",
+=======
+  "version": "4.4.11-mod-10",
+>>>>>>> Stashed changes
   "description": "JavaScript implementation of most Microsoft Excel formula functions",
   "author": "Formulajs",
   "publishConfig": {
