@@ -166,8 +166,8 @@ export const FUNCTION_LOCALE = [
         repeat: "n",
       },
     ],
-  }
-      {
+  },
+  {
     n: "PNL",
     t: 20,
     d: "Subtract each element from A column from B column and return the total sum.",
