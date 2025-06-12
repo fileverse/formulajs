@@ -85,7 +85,7 @@ export const FUNCTION_LOCALE = [
   ],
 },
   {
-    n: "GETPRICE",
+    n: "COINGECKO",
     t: 20,
     API_KEY: SERVICE_API_KEY.Coingecko,
     d: "Query the prices of one or more coins by using their unique Coin API IDs, symbols, or names.",
