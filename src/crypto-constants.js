@@ -128,6 +128,10 @@ export const FUNCTION_LOCALE = [
     ],
   },
   {
+    API_KEY: SERVICE_API_KEY.Etherscan,
+    LOGO: "https://safe-transaction-mainnet.safe.global/static/safe/favicon.png",
+    BRAND_COLOR: "#ebf9f3",
+    BRAND_SECONDARY_COLOR: "#00B460",
     n: "SAFE",
     t: 20,
     d: "Query the list of transactions performed by a Safe address, with optional pagination.",
@@ -194,3 +198,5 @@ export const FUNCTION_LOCALE = [
       ],
     },
 ]
+
+export * from './utils/constants'
