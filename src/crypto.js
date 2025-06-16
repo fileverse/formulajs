@@ -301,7 +301,7 @@ export async function NEYNAR() {
     return `${SERVICE_API_KEY.Neynar}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
   }
 
-  const fid = await fromUsernameToFid(username)
+  const fid = await fromUsernameToFid(username, API_KEY)
 
   if(!fid){
     return `${SERVICE_API_KEY.Neynar}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
