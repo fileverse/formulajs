@@ -303,7 +303,7 @@ export async function ETHERSCAN(...args) {
 }
 
 
-export async function COINGECKO(category, param1, param2, page = 1, perPage = 2) {
+export async function COINGECKO(category, param1, param2) {
   const API_KEY = window.localStorage.getItem(SERVICE_API_KEY.Coingecko);
   if (!API_KEY) return `${SERVICE_API_KEY.Coingecko}${ERROR_MESSAGES_FLAG.MISSING_KEY}`;
 
@@ -344,7 +344,7 @@ export async function COINGECKO(category, param1, param2, page = 1, perPage = 2)
       const categoryVal = ecosystemMap[key] || '';
       const trend = param2 ? `&price_change_percentage=${param2}` : '';
 
-      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&include_tokens=top&page=${page}&per_page=${perPage}`;
+      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&include_tokens=top&page=1&per_page=100`;
       if (key && !categoryVal) return `${SERVICE_API_KEY.Coingecko}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
       if (categoryVal) url += `&category=${categoryVal}`;
       if (trend) url += trend;
@@ -357,7 +357,7 @@ export async function COINGECKO(category, param1, param2, page = 1, perPage = 2)
         : param1.toLowerCase();
 
       const trend = param2 ? `&price_change_percentage=${param2}` : '';
-      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${category}&order=market_cap_desc&page=${page}&per_page=${perPage}${trend}`;
+      url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${category}&order=market_cap_desc&page=1&per_page=100${trend}`;
       break;
     }
 
