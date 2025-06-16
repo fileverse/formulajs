@@ -515,17 +515,18 @@ export async function COINGECKO(category, param1, param2) {
       if(param1 !== 'all' && json && json.tickers){
         const exchangeDetails = {
           exchange_id: param1,
-          exchange_name: json.exchange_name,
-          exchange_logo: json.exchange_logo,
-          exchange_url: json.exchange_url,
-          exchange_description: json.exchange_description,
-          exchange_trust_score: json.exchange_trust_score,
-          exchange_trust_score_desc: json.exchange_trust_score_desc,
+          exchange_name: json.name,
+          exchange_logo: json.logo,
+          exchange_url: json.url,
+          exchange_trade_volume_24h_btc: json.trade_volume_24h_btc,
+          exchange_number_of_futures_pairs: json.number_of_futures_pairs,
+          exchange_number_of_perpetual_pairs: json.number_of_perpetual_pairs,
+          exchange_open_interest_btc: json.open_interest_btc,
         };
         data = json.tickers.slice(0, 200).map(item => {
           return {
             ...item,
-            exchange_id: param1,
+            ...exchangeDetails,
             usd_volume: item.converted_volume && item.converted_volume.usd,
           }
         });
