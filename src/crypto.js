@@ -549,28 +549,23 @@ export async function COINGECKO(category, param1, param2) {
   }
 }
 
-export async function EOA(
-) {
+export async function EOA() {
   const API_KEY = window.localStorage.getItem(SERVICE_API_KEY.Etherscan);
   if (!API_KEY) return `${SERVICE_API_KEY.Etherscan}${ERROR_MESSAGES_FLAG.MISSING_KEY}`;
-
   let [
-      addresses,
-  category,
-  chains,
-  startTime,
-  endTime,
-  page = 1,
-  offset = 10,
+    addresses,
+    category,
+    chains,
+    startTime,
+    endTime,
+    page = 1,
+    offset = 10,
   ] = utils.argsToArray(arguments)
-
   const INPUTS = addresses.split(",").map(a => a.trim()).filter(Boolean);
   const CHAINS = chains.split(",").map(c => c.trim()).filter(Boolean);
   const out = [];
-
   // Map: finalAddress => ENS name (if applicable)
   const ADDRESS_MAP = {};
-
   for (const input of INPUTS) {
     if (isAddress(input)) {
       ADDRESS_MAP[input.toLowerCase()] = null; // it's a direct address
@@ -583,51 +578,42 @@ export async function EOA(
       }
     }
   }
-
   const ADDRS = Object.keys(ADDRESS_MAP);
-
   for (const chain of CHAINS) {
     const chainId = CHAIN_ID_MAP[chain];
     if (!chainId) return ERROR_MESSAGES_FLAG.UNSUPPORTED_CHAIN;
-
     if (category === "balance") {
       for (let i = 0; i < ADDRS.length; i += 20) {
         const slice = ADDRS.slice(i, i + 20).join(",");
-        const action = ADDRS.length > 1 ? "balancemulti" : "balance";
-
+        const action = 'addresstokenbalance';
         const url =
           `https://api.etherscan.io/v2/api?chainid=${chainId}` +
           `&module=account&action=${action}&address=${slice}` +
-          `&tag=latest&apikey=${API_KEY}`;
-
+          `&page=${page}&offset=${offset}&apikey=${API_KEY}`;
         const data = await fetchJSON(url);
         if (typeof data === "string") return data;
-
-        (Array.isArray(data) ? data : [data]).forEach(r =>
+        data.forEach(tx =>
           out.push({
             chain,
-            ...r,
-            name: ADDRESS_MAP[(r.account || r.address || "").toLowerCase()] || null,
+            address: ADDRS[i],
+            name: ADDRESS_MAP[ADDRS[i]],
+            ...tx,
           }),
         );
       }
       continue;
     }
-
     if (category === "txns") {
       const startBlock = await fromTimeStampToBlock(toTimestamp(startTime), chain, API_KEY);
       const endBlock = await fromTimeStampToBlock(toTimestamp(endTime), chain, API_KEY);
-
       for (const addr of ADDRS) {
         const url =
           `https://api.etherscan.io/v2/api?chainid=${chainId}` +
           `&module=account&action=txlist&address=${addr}` +
           `&startblock=${startBlock}&endblock=${endBlock}` +
           `&page=${page}&offset=${offset}&sort=asc&apikey=${API_KEY}`;
-
         const data = await fetchJSON(url);
         if (typeof data === "string") return data;
-
         data.forEach(tx =>
           out.push({
             chain,
@@ -639,7 +625,6 @@ export async function EOA(
       }
       continue;
     }
-
     return ERROR_MESSAGES_FLAG.INVALID_CATEGORY;
   }
 
@@ -759,6 +744,7 @@ export async function DEFILLAMA() {
     return "ERROR IN FETCHING";
   }
 }
+
 export function POLYMARKET() {
   return "Coming Soon"
  }
