@@ -511,8 +511,15 @@ export async function COINGECKO(category, param1, param2) {
       if (json.length > 200) {
         data = json.slice(0, 200)
       }
-      if (json && json.tickers && json.tickers.tickers) {
-        data = json.tickers.tickers.slice(0, 200)
+
+      if(param1 !== 'all' && json && json.tickers){
+        data = json.tickers.slice(0, 200).map(item => {
+          return {
+            ...item,
+            exchange_id: param1,
+            usd_volume: item.converted_volume && item.converted_volume.usd,
+          }
+        });
       }
     }
 
