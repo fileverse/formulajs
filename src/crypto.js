@@ -513,6 +513,15 @@ export async function COINGECKO(category, param1, param2) {
       }
 
       if(param1 !== 'all' && json && json.tickers){
+        const exchangeDetails = {
+          exchange_id: param1,
+          exchange_name: json.exchange_name,
+          exchange_logo: json.exchange_logo,
+          exchange_url: json.exchange_url,
+          exchange_description: json.exchange_description,
+          exchange_trust_score: json.exchange_trust_score,
+          exchange_trust_score_desc: json.exchange_trust_score_desc,
+        };
         data = json.tickers.slice(0, 200).map(item => {
           return {
             ...item,
