@@ -6,6 +6,7 @@ import {toTimestamp} from './utils/toTimestamp'
 import {isAddress} from './utils/is-address'
 import { fromEnsNameToAddress } from "./utils/from-ens-name-to-address";
 import { fromUsernameToFid } from "./utils/from-username-to-fid";
+import { removeNestedStructure } from "./utils/remove-nested-structure";
 import * as utils from './utils/common'
 
 
@@ -725,7 +726,7 @@ export async function DEFILLAMA() {
     if(json.length > 300){
       json = json.slice(0, 300)
     }
-    return json;
+    return removeNestedStructure(json);
   } catch (e) {
     console.log(e);
     return "ERROR IN FETCHING";
