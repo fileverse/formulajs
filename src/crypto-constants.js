@@ -957,8 +957,8 @@ If "derivatives": exchange name (e.g., "binance_futures").`,
     },
     {
       name: "param1",
-      detail: "Identifier for the category. For protocols, it's the protocol name. For yields, it's the pool address. For dex, it's the pool address.",
-      example: `"toka"`,
+      detail: "For protocols, it's the protocol name. (optional)",
+      example: `"aave"`,
       require: "m",
       type: "string"
     }
