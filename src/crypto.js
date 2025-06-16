@@ -721,7 +721,10 @@ export async function DEFILLAMA() {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    const json = await response.json();
+    let json = await response.json();
+    if(json.length > 300){
+      json = json.slice(0, 300)
+    }
     return json;
   } catch (e) {
     console.log(e);
