@@ -111,7 +111,7 @@ export async function LENS() {
           flat[key] = value;
         }
       }
-      flat.platform = platform;
+      flat.platform = 'lens';
       return flat;
     });
 
@@ -164,7 +164,7 @@ export async function FARCASTER() {
           flat[key] = value;
         }
       }
-      flat.platform = platform;
+      flat.platform = "farcaster";
       return flat;
     });
 
