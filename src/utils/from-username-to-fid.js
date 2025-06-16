@@ -1,5 +1,3 @@
-import {SERVICE_API_KEY} from '../crypto-constants'
-
 export const fromUsernameToFid = async (username, apiKey) => {
   if(!username) return null
   const url = `https://api.neynar.com/v2/farcaster/user/search/?q=${username}&limit=5`;
