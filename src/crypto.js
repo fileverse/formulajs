@@ -721,28 +721,39 @@ export async function SAFE() {
 }
 
 export async function DEFILLAMA() {
-  let [category, param1] = utils.argsToArray(arguments)
+  let [category] = utils.argsToArray(arguments)
   const apiKey = window.localStorage.getItem(SERVICE_API_KEY.Defillama);
   if (!apiKey) return `${SERVICE_API_KEY.Defillama}_MISSING`;
-  const baseUrl = 'https://api.llama.fi/'
   const categoryList = ['protocols', 'yields', 'dex'];
   const categoryMap = {
-    [categoryList[0]]: 'protocols',
-    [categoryList[1]]: 'pools',
-    [categoryList[2]]: 'overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true'
+    [categoryList[0]]: 'https://api.llama.fi/protocols',
+    [categoryList[1]]: 'https://yields.llama.fi/pools',
+    [categoryList[2]]: 'https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true'
   }
-  let url = `${baseUrl}/${categoryMap[category]}`
-  if(categoryMap[category] === categoryList[0] && param1){
-    url += `/${param1}`
-  }
+  let url = categoryMap[category]
+
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
     let json = await response.json();
-    if(json.length > 300){
-      json = json.slice(0, 300)
+    switch(category){
+      case categoryList[0]: {
+        if(json.length > 500){
+          json = json.slice(0, 500)
+        }
+        break;
+      }
+      case categoryList[1]: {
+        json = json.data.slice(0, 500)
+        break;
+      }
+      case categoryList[2]: {
+        json = json.protocols.slice(0, 500)
+        break;
+      }
     }
-    return removeNestedStructure(json);
+
+    return removeNestedStructure(Array.isArray(json) ? json : [json]);
   } catch (e) {
     console.log(e);
     return "ERROR IN FETCHING";
