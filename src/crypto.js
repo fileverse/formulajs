@@ -5,6 +5,7 @@ import { handleScanRequest } from "./utils/handle-explorer-request";
 import {toTimestamp} from './utils/toTimestamp'
 import {isAddress} from './utils/is-address'
 import { fromEnsNameToAddress } from "./utils/from-ens-name-to-address";
+import { fromUsernameToFid } from "./utils/from-username-to-fid";
 
 
 
@@ -187,25 +188,25 @@ export async function GNOSIS(...args) {
 }
 
 export async function NEYNAR(
-  fid,
-  viewerFid,
-  sortType,
-  limit,
-  cursor
+  username
 ) {
   const API_KEY = window.localStorage.getItem(SERVICE_API_KEY.Neynar);
   if (!API_KEY) return `${SERVICE_API_KEY.Neynar}${ERROR_MESSAGES_FLAG.MISSING_KEY}`;
 
+  if(!username){
+    return `${SERVICE_API_KEY.Neynar}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
+  }
 
-  const url = new URL('https://api.neynar.com/v2/farcaster/followers');
-  url.searchParams.set('fid', fid.toString());
-  url.searchParams.set('sort_type', sortType);
-  url.searchParams.set('limit', limit.toString());
-  if (viewerFid !== null) url.searchParams.set('viewer_fid', viewerFid.toString());
-  if (cursor) url.searchParams.set('cursor', cursor);
+  const fid = await fromUsernameToFid(username)
+
+  if(!fid){
+    return `${SERVICE_API_KEY.Neynar}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
+  }
+
+  const url = `https://api.neynar.com/v2/farcaster/followers?fid=${fid}`
 
   try {
-    const response = await fetch(url.toString(), {
+    const response = await fetch(url, {
       headers: {
         'x-api-key': API_KEY,
         'x-neynar-experimental': 'false'
