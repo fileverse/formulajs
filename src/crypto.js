@@ -708,11 +708,12 @@ export async function DEFILLAMA() {
   let [category] = utils.argsToArray(arguments)
   const apiKey = window.localStorage.getItem(SERVICE_API_KEY.Defillama);
   if (!apiKey) return `${SERVICE_API_KEY.Defillama}_MISSING`;
-  const categoryList = ['protocols', 'yields', 'dex'];
+  const categoryList = ['protocols', 'yields', 'dex', 'fees'];
   const categoryMap = {
     [categoryList[0]]: 'https://api.llama.fi/protocols',
     [categoryList[1]]: 'https://yields.llama.fi/pools',
-    [categoryList[2]]: 'https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true'
+    [categoryList[2]]: 'https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true',
+    [categoryList[3]]: 'https://api.llama.fi/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyFees'
   }
   let url = categoryMap[category]
 
@@ -732,6 +733,10 @@ export async function DEFILLAMA() {
         break;
       }
       case categoryList[2]: {
+        json = json.protocols.slice(0, 500)
+        break;
+      }
+      case categoryList[3]: {
         json = json.protocols.slice(0, 500)
         break;
       }
