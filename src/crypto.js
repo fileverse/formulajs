@@ -589,7 +589,7 @@ export async function EOA() {
         const url =
           `https://api.etherscan.io/v2/api?chainid=${chainId}` +
           `&module=account&action=${action}&address=${slice}` +
-          `&page=${page}&offset=${offset}&apikey=${API_KEY}`;
+          `&page=${page}&offset=100&apikey=${API_KEY}`;
         const data = await fetchJSON(url);
         if (typeof data === "string") return data;
         data.forEach(tx =>
