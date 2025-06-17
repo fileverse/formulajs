@@ -450,7 +450,6 @@ export async function COINGECKO(category, param1, param2) {
       const trend = param2 ? `&price_change_percentage=${param2}` : '';
 
       url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&include_tokens=top&page=1&per_page=100`;
-      if (key && !categoryVal) return `${SERVICE_API_KEY.Coingecko}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`;
       if (categoryVal) url += `&category=${categoryVal}`;
       if (trend) url += trend;
       break;
