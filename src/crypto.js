@@ -609,7 +609,7 @@ export async function EOA() {
       for (const addr of ADDRS) {
         const url =
           `https://api.etherscan.io/v2/api?chainid=${chainId}` +
-          `&module=account&action=txlist&address=${addr}` +
+          `&module=account&action=tokentx&address=${addr}` +
           `&startblock=${startBlock}&endblock=${endBlock}` +
           `&page=${page}&offset=${offset}&sort=asc&apikey=${API_KEY}`;
         const data = await fetchJSON(url);
