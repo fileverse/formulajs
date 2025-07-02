@@ -1,3 +1,9 @@
+/* global document */
+/* global window */
+/* global ethers */
+
+
+
 import {UTILITY} from './constants'
 
 
