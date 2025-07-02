@@ -36,7 +36,7 @@ export async function handleScanRequest({
   const baseUrl = apiInfo?.url
 
   if (!baseUrl) {
-    return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, {
+    return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
       message: 'Api not found',
       reason: ` Api not found for: ${functionName}`
     }, functionName)

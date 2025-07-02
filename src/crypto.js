@@ -150,7 +150,6 @@ export async function LENS() {
 
 export async function FARCASTER() {
   const [contentType, identifier, start = 0, end = 10] = utils.argsToArray(arguments)
-  const API_KEY = window.localStorage.getItem(SERVICES_API_KEY.Firefly)
   const missingParamsError = checkRequiredParams({ contentType, identifier })
   if (missingParamsError) {
     return missingParamsError
@@ -158,6 +157,7 @@ export async function FARCASTER() {
   if (end > MAX_PAGE_LIMIT) {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT)
   }
+  const API_KEY = window.localStorage.getItem(SERVICES_API_KEY.Firefly)
   if (!API_KEY) return errorMessageHandler(ERROR_MESSAGES_FLAG.MISSING_KEY, SERVICES_API_KEY.Firefly)
   const baseUrl = 'https://openapi.firefly.land/v1/fileverse/fetch'
   const headers = { 'x-api-key': API_KEY }
@@ -270,13 +270,13 @@ export async function BLOCKSCOUT() {
     }
     const json = await response.json()
     if (json?.result?.includes('Invalid parameter(s)')) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, {
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
         message: 'Invalid parameters',
         reason: json.result
       })
     }
     if (json?.result?.includes('Not found')) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, {
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
         message: 'Address information not found',
         reason: json.result
       })
@@ -630,7 +630,9 @@ export async function COINGECKO() {
 export async function EOA() {
   let [addresses, category, chains, startTime, endTime, page = 1, offset = 10] = utils.argsToArray(arguments)
 
-  const missingParamsError = checkRequiredParams({ addresses, category, chains, startTime, endTime })
+  const optionalParams = category === 'balance' ? {} : {startTime, endTime}
+
+  const missingParamsError = checkRequiredParams({ addresses, category, chains, ...optionalParams })
 
   if (missingParamsError) {
     return missingParamsError
@@ -739,7 +741,7 @@ export async function EOA() {
         return errorMessageHandler(ERROR_MESSAGES_FLAG.RATE_LIMIT, SERVICES_API_KEY.Etherscan)
 
       if (json.status === '0' && json.message !== 'No transactions found')
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, {
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
           message: json.message || 'Api Error',
           reason: json.message || 'json.status === "0" && json.message !== "No transactions found"'
         })
@@ -781,7 +783,7 @@ export async function SAFE() {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { offset })
   if (utility !== 'txns') return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { utility })
   if (limit > MAX_PAGE_LIMIT) {
-    return ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT
+    return errorMessageHandler(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT)
   }
 
   const chainIdentifier = SAFE_CHAIN_MAP[chain]
@@ -808,7 +810,7 @@ export async function SAFE() {
     }
     const json = await response.json()
     if (!Array.isArray(json.results)) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, { message: 'Invalid API response' })
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, { message: 'Invalid API response' })
     }
     // remove nested structure from the response
     return json.results.map(({ confirmations, dataDecoded, ...rest }) => rest)

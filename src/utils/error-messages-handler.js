@@ -37,7 +37,7 @@ export const errorMessageHandler = (errorFlag, input, functionName) => {
     return { message: `Missing param: ${input}`, functionName, type: errorFlag }
   } else if (errorFlag === ERROR_MESSAGES_FLAG.ENS) {
     return { message: `${input} is not a supported ens name`, functionName, type: errorFlag }
-  } else if (errorFlag === ERROR_MESSAGES_FLAG.OTHER_ERRORS) {
+  } else if (errorFlag === ERROR_MESSAGES_FLAG.CUSTOM) {
     return { message: input.message, functionName, type: errorFlag, reason: input.reason || input.message }
   } else if (errorFlag === ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT) {
     return { message: ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT, functionName, type: errorFlag }

@@ -294,7 +294,7 @@ If "derivatives": exchange name (e.g., "binance_futures", "hyperliquid", "weex-f
         name: 'address',
         detail: 'Wallet address / Ens name to query',
         example: `"vitalik.eth"`,
-        require: 'o',
+        require: 'm',
         type: 'string'
       },
       {
