@@ -4,7 +4,7 @@
 
 
 
-import {UTILITY} from './constants'
+import {UTILITY} from './constants.js'
 
 
 export async function fromEnsNameToAddress(name) {

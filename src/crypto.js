@@ -1,22 +1,22 @@
 /* global window */
 
-import { SERVICES_API_KEY } from './crypto-constants'
-import { fromTimeStampToBlock } from './utils/from-timestamp-to-block'
+import { SERVICES_API_KEY } from './crypto-constants.js'
+import { fromTimeStampToBlock } from './utils/from-timestamp-to-block.js'
 import {
   CHAIN_ID_MAP,
   BLOCKSCOUT_CHAINS_MAP,
   SAFE_CHAIN_MAP,
   ERROR_MESSAGES_FLAG,
   MAX_PAGE_LIMIT
-} from './utils/constants'
-import { handleScanRequest } from './utils/handle-explorer-request'
-import { toTimestamp } from './utils/toTimestamp'
-import { isAddress } from './utils/is-address'
-import { fromEnsNameToAddress } from './utils/from-ens-name-to-address'
-import { fromUsernameToFid } from './utils/from-username-to-fid'
-import { removeNestedStructure } from './utils/remove-nested-structure'
-import * as utils from './utils/common'
-import { checkRequiredParams, errorMessageHandler } from './utils/error-messages-handler'
+} from './utils/constants.js'
+import { handleScanRequest } from './utils/handle-explorer-request.js'
+import { toTimestamp } from './utils/toTimestamp.js'
+import { isAddress } from './utils/is-address.js'
+import { fromEnsNameToAddress } from './utils/from-ens-name-to-address.js'
+import { fromUsernameToFid } from './utils/from-username-to-fid.js'
+import { removeNestedStructure } from './utils/remove-nested-structure.js'
+import * as utils from './utils/common.js'
+import { checkRequiredParams, errorMessageHandler } from './utils/error-messages-handler.js'
 
 export async function FIREFLY() {
   const [platform, contentType, identifier, start = 0, end = 10] = utils.argsToArray(arguments)
@@ -69,7 +69,7 @@ export async function FIREFLY() {
 
   try {
     const res = await fetch(url.toString(), { headers })
-    if (!res.ok) errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
+    if (!res.ok) return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
 
     const json = await res.json()
     if (!Array.isArray(json?.data)) return []

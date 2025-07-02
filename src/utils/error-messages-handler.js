@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES_FLAG } from './utils/constants'
+import { ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from './constants.js'
 
 export const errorMessageHandler = (errorFlag, input, functionName) => {
   if (!functionName) {
@@ -40,8 +40,8 @@ export const errorMessageHandler = (errorFlag, input, functionName) => {
   } else if (errorFlag === ERROR_MESSAGES_FLAG.CUSTOM) {
     return { message: input.message, functionName, type: errorFlag, reason: input.reason || input.message }
   } else if (errorFlag === ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT) {
-    return { message: ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT, functionName, type: errorFlag }
-  } else if (errorFlag.ERROR_MESSAGES_FLAG.INVALID_API_KEY) {
+    return { message: `Max page limit is ${MAX_PAGE_LIMIT}`, functionName, type: errorFlag }
+  } else if (errorFlag === ERROR_MESSAGES_FLAG.INVALID_API_KEY) {
     return { message: `${input}: Invalid API key`, type: errorFlag, functionName }
   }
 }

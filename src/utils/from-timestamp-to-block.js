@@ -1,4 +1,4 @@
-import {CHAIN_ID_MAP} from './constants'
+import {CHAIN_ID_MAP} from './constants.js'
   
   export const fromTimeStampToBlock = async (timestamp, chain, apiKey) => {
 if(!timestamp || !chain || !apiKey) return 

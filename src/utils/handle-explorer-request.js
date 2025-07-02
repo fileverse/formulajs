@@ -1,10 +1,10 @@
-import { fromTimeStampToBlock } from './from-timestamp-to-block'
-import { ERROR_MESSAGES_FLAG } from './constants'
-import { toTimestamp } from './toTimestamp'
-import { isAddress } from './is-address'
-import { fromEnsNameToAddress } from './from-ens-name-to-address'
-import { errorMessageHandler } from './utils/error-messages-handler'
-import { SERVICES_API_KEY } from '../crypto-constants'
+import { fromTimeStampToBlock } from './from-timestamp-to-block.js'
+import { ERROR_MESSAGES_FLAG } from './constants.js'
+import { toTimestamp } from './toTimestamp.js'
+import { isAddress } from './is-address.js'
+import { fromEnsNameToAddress } from './from-ens-name-to-address.js'
+import { errorMessageHandler } from './error-messages-handler.js'
+import { SERVICES_API_KEY } from '../crypto-constants.js'
 
 export async function handleScanRequest({
   type,
