@@ -1,5 +1,5 @@
 import { fromTimeStampToBlock } from './from-timestamp-to-block'
-import { CHAIN_ID_MAP, ERROR_MESSAGES_FLAG } from './constants'
+import { ERROR_MESSAGES_FLAG } from './constants'
 import { toTimestamp } from './toTimestamp'
 import { isAddress } from './is-address'
 import { fromEnsNameToAddress } from './from-ens-name-to-address'
@@ -39,7 +39,7 @@ export async function handleScanRequest({
     return errorMessageHandler(ERROR_MESSAGES_FLAG.OTHER_ERRORS, {
       message: 'Api not found',
       reason: ` Api not found for: ${functionName}`
-    })
+    }, functionName)
   }
 
   const ACTION_MAP = {
