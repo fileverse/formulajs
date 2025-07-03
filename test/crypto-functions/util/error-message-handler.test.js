@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { errorMessageHandler, checkRequiredParams } from '../src/utils/error-messages-handler.js';
-import { ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from '../src/utils/constants.js';
+import { errorMessageHandler, checkRequiredParams } from '../../../src/utils/error-messages-handler.js';
+import { ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from '../../../src/utils/constants.js';
 
 
 describe('errorMessageHandler', () => {
