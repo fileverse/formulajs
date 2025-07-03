@@ -1,37 +1,44 @@
-import { fromTimeStampToBlock } from './from-timestamp-to-block'
-import { CHAIN_ID_MAP, ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from './constants'
-import { SERVICE_API_KEY } from '../crypto-constants'
-import { toTimestamp } from './toTimestamp'
-import { isAddress } from './is-address'
-import { fromEnsNameToAddress } from './from-ens-name-to-address'
-
+import * as fromTimeStampToBlockUtil from './from-timestamp-to-block.js'
+import { ERROR_MESSAGES_FLAG } from './constants.js'
+import { toTimestamp } from './toTimestamp.js'
+import * as isAddressUtil from './is-address.js'
+import * as fromEnsNameToAddressUtil from './from-ens-name-to-address.js'
+import { errorMessageHandler } from './error-messages-handler.js'
+import { SERVICES_API_KEY } from '../crypto-constants.js'
 export async function handleScanRequest({
-  scanKey,
-  baseUrl,
   type,
-  chain,
   address,
   startDate,
   endDate,
   page = 1,
-  offset = 10
+  offset = 10,
+  apiKey,
+  functionName,
+  chainId,
+  network
 }) {
-  const API_KEY = window.localStorage.getItem(scanKey)
-  if (!API_KEY) return `${scanKey}${ERROR_MESSAGES_FLAG.MISSING_KEY}`
-  if (API_KEY === 'xxxx') return `${scanKey}${ERROR_MESSAGES_FLAG.RATE_LIMIT}`
-  if (offset > MAX_PAGE_LIMIT) {
-    return ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT
+  const API_INFO_MAP = {
+    BASE: { url: 'https://api.basescan.org/api', apiKeyName: SERVICES_API_KEY.Basescan },
+    ETHERSCAN: { url: 'https://api.etherscan.io/v2/api', apiKeyName: SERVICES_API_KEY.Etherscan },
+    GNOSIS: { url: 'https://api.gnosisscan.io/api', apiKeyName: SERVICES_API_KEY.Gnosisscan }
   }
 
-  let chainId = CHAIN_ID_MAP[chain?.toLowerCase()]
-  if (!chainId) return `${scanKey}${ERROR_MESSAGES_FLAG.INVALID_CHAIN}`
-
-  if (!isAddress(address)) {
-    address = await fromEnsNameToAddress(address)
+  if (!isAddressUtil.default.isAddress(address)) {
+    const ensName = address
+    address = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(address)
+    if (!address) {
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.ENS, ensName, functionName)
+    }
   }
 
-  if (!address) {
-    return `${address}${ERROR_MESSAGES_FLAG.INVALID_PARAM}`
+  const apiInfo = API_INFO_MAP[functionName]
+  const baseUrl = apiInfo?.url
+
+  if (!baseUrl) {
+    return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
+      message: 'Api not found',
+      reason: ` Api not found for: ${functionName}`
+    }, functionName)
   }
 
   const ACTION_MAP = {
@@ -42,40 +49,39 @@ export async function handleScanRequest({
   }
 
   const action = ACTION_MAP[type]
-  if (!action) return `${scanKey}${ERROR_MESSAGES_FLAG.INVALID_TYPE}`
+  if (!action) return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { type }, functionName)
 
-  if (scanKey === SERVICE_API_KEY.Basescan) chainId = 'base'
-  if (scanKey === SERVICE_API_KEY.Gnosisscan) chainId = 'gnosis'
-
-  let url = `${baseUrl}?chainid=${chainId}&module=account&action=${action}&apikey=${API_KEY}`
+  let url = `${baseUrl}?chainid=${chainId}&module=account&action=${action}&apikey=${apiKey}`
 
   if (['all-txns', 'token-txns', 'nft-txns'].includes(type)) {
-    if (!address) return `${scanKey}${ERROR_MESSAGES_FLAG.INVALID_ADDRESS}`
     url += `&address=${address}&startblock=0&endblock=99999999&sort=asc`
 
     if (!isNaN(startDate) && !isNaN(endDate)) {
       const [startBlock, endBlock] = await Promise.all([
-        fromTimeStampToBlock(toTimestamp(startDate), chain, API_KEY),
-        fromTimeStampToBlock(toTimestamp(endDate), chain, API_KEY)
+        fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(startDate), network, apiKey),
+        fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(endDate), network, apiKey)
       ])
-      url += `&startblock=${startBlock}&endblock=${endBlock}`
+      url += `&startblock=${startBlock || '0'}&endblock=${endBlock || '99999999'}`
     }
     url += `&page=${page}&offset=${offset}`
   }
 
   try {
     const res = await fetch(url)
-    if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
+    if (!res.ok) {
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status, functionName)
+    }
     const json = await res.json()
 
     if (typeof json.result === 'string') {
-      if (json.result.includes('Invalid API Key')) return `${scanKey}${ERROR_MESSAGES_FLAG.INVALID_API_KEY}`
-      if (json.result.includes('Max rate limit reached')) return `${scanKey}${ERROR_MESSAGES_FLAG.RATE_LIMIT}`
+      if (json.result.includes('Invalid API Key'))
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_API_KEY, apiInfo.apiKeyName, functionName)
+      if (json.result.includes('Max rate limit reached'))
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.RATE_LIMIT, apiInfo.apiKeyName, functionName)
     }
 
     return json.result
   } catch (err) {
-    console.error(`[${scanKey}]`, err)
-    return ERROR_MESSAGES_FLAG.DEFAULT
+    return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err, functionName)
   }
 }
