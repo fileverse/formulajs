@@ -11,6 +11,18 @@ describe('errorMessageHandler', () => {
     expect(result.functionName).to.equal('testFuncName');
   });
 
+  it('should detect function name from object method call', () => {
+    const callerObj = {
+      objectCaller() {
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_ADDRESS, '0xabc');
+      }
+    };
+
+    const result = callerObj.objectCaller();
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_ADDRESS);
+    expect(result.functionName).to.equal('objectCaller');
+  });
+
   it('should return default error when unknown errorFlag is passed', () => {
     const result = errorMessageHandler('UNKNOWN_FLAG', 'oops', 'UnknownFunc');
     expect(result.message).to.equal('An unexpected error occured');
@@ -125,5 +137,25 @@ describe('checkRequiredParams', () => {
   it('should return undefined for empty object', () => {
     const result = checkRequiredParams({});
     expect(result).to.be.undefined;
+  });
+  it('should detect parent function call', () => {
+    function parent() {
+      return checkRequiredParams({ alpha: undefined });
+    }
+
+    const result = parent();
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
+    expect(result.functionName).to.equal('parent');
+  });
+  it('should detect object method call', () => {
+    const callerObj = {
+      objectCaller() {
+        return checkRequiredParams({ gamma: undefined });
+      }
+    };
+
+    const result = callerObj.objectCaller();
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
+    expect(result.functionName).to.equal('objectCaller');
   });
 });

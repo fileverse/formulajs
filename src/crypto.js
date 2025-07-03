@@ -501,7 +501,7 @@ export async function COINGECKO() {
   }
 
   let url = ''
-  const lowerCategory = (category || '').toLowerCase()
+  const lowerCategory = (category || '').toLowerCase?.()
 
   switch (lowerCategory) {
     case 'price': {
@@ -678,7 +678,7 @@ export async function EOA() {
           `https://api.etherscan.io/v2/api?chainid=${chainId}` +
           `&module=account&action=${action}&address=${slice}` +
           `&page=${page}&offset=100&apikey=${API_KEY}`
-        const data = await fetchJSON(url)
+        const data = await fetchJSON(url, 'EOA')
         if (!Array.isArray(data)) return data
         data.forEach((tx) =>
           out.push({
@@ -706,7 +706,7 @@ export async function EOA() {
           `&module=account&action=tokentx&address=${addr}` +
           `&startblock=${startBlock}&endblock=${endBlock}` +
           `&page=${page}&offset=${offset}&sort=asc&apikey=${API_KEY}`
-        const data = await fetchJSON(url)
+        const data = await fetchJSON(url, 'EOA')
         if (!Array.isArray(data)) return data
         data.forEach((tx) =>
           out.push({
@@ -724,30 +724,30 @@ export async function EOA() {
 
   return out
 
-  async function fetchJSON(url) {
+  async function fetchJSON(url, fnName) {
     try {
       const res = await fetch(url)
       if (!res.ok) {
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status, fnName)
       }
 
       const json = await res.json()
 
       if (json.result?.includes?.('Invalid API Key'))
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_API_KEY, SERVICES_API_KEY.Etherscan)
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_API_KEY, SERVICES_API_KEY.Etherscan, fnName)
 
       if (json.result?.includes?.('Max rate limit reached'))
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.RATE_LIMIT, SERVICES_API_KEY.Etherscan)
+        return errorMessageHandler(ERROR_MESSAGES_FLAG.RATE_LIMIT, SERVICES_API_KEY.Etherscan, fnName)
 
       if (json.status === '0' && json.message !== 'No transactions found')
         return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
-          message: json.message || 'Api Error',
-          reason: json.message || 'json.status === "0" && json.message !== "No transactions found"'
-        })
+          message: 'Api Error',
+          reason: json?.result || 'json.status === "0" && json.message !== "No transactions found"'
+        }, fnName)
 
       return json.result
     } catch (err) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err)
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err, fnName)
     }
   }
 }

@@ -103,6 +103,7 @@ describe('EOA', function () {
 
     const result = await EOA('0xabc', 'txns', 'ethereum', '2023-01-01', '2024-01-01');
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
+    expect(result.functionName).to.equal('EOA')
   });
 
   it('should return INVALID_API_KEY if result contains error message', async () => {

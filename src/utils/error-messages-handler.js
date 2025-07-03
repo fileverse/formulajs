@@ -3,8 +3,9 @@ import { ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from './constants.js'
 export const errorMessageHandler = (errorFlag, input, functionName) => {
   if (!functionName) {
     const stack = new Error().stack?.split('\n')[2]
-    const match = stack?.match(/at (\w+)/)
-    functionName = match?.[1]
+    const match = stack?.match(/at (.+?) \(/);
+    const rawFnName = match?.[1];
+    functionName = rawFnName?.split('.').pop() || '[unable to detect function name]';
   }
 
   switch (errorFlag) {
@@ -113,11 +114,14 @@ export const errorMessageHandler = (errorFlag, input, functionName) => {
 export const checkRequiredParams = (inputMap) => {
   for (const key in inputMap) {
     if (!inputMap[key]) {
-      const stack = new Error().stack?.split('\n')[2]
-      const match = stack?.match(/at (\w+)/)
-      const parentFunctionName = match?.[1]
-      const paramName = key
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.MISSING_PARAM, paramName, parentFunctionName)
+      const stack = new Error().stack?.split('\n')[2];
+
+      const match = stack?.match(/at (.+?) \(/);
+      const rawFnName = match?.[1];
+      const parentFunctionName = rawFnName?.split('.').pop() || '[unable to detect function name]';
+
+      const paramName = key;
+      return errorMessageHandler(ERROR_MESSAGES_FLAG.MISSING_PARAM, paramName, parentFunctionName);
     }
   }
-}
+};
