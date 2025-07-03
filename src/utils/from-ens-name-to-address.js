@@ -7,7 +7,7 @@
 import {UTILITY} from './constants.js'
 
 
-export async function fromEnsNameToAddress(name) {
+async function fromEnsNameToAddress(name) {
   if (typeof ethers === 'undefined') {
     await new Promise((resolve, reject) => {
       const script = document.createElement('script')
@@ -32,4 +32,8 @@ export async function fromEnsNameToAddress(name) {
     console.error('ENS resolution failed:', err.message)
     return null
   }
+}
+
+export default {
+  fromEnsNameToAddress
 }

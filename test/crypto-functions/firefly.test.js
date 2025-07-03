@@ -27,13 +27,14 @@ describe('FIREFLY', () => {
     const result = await FIREFLY();
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
     expect(result.message).to.include('Missing param');
-    console.log(result.message)
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should return MAX_PAGE_LIMIT error if end > MAX_PAGE_LIMIT', async () => {
     const args = ['farcaster', 'posts', 'xyz', 0, 99999];
     const result = await FIREFLY(...args);
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT);
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should return missing key error if no API key in localStorage', async () => {
@@ -41,6 +42,7 @@ describe('FIREFLY', () => {
     const args = ['farcaster', 'posts', 'xyz'];
     const result = await FIREFLY(...args);
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY);
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should return INVALID_PARAM for unsupported platform', async () => {
@@ -50,16 +52,17 @@ describe('FIREFLY', () => {
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
     expect(result.message).to.include('twitter');
     expect(result.message).to.include('platform');
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should return INVALID_PARAM for unsupported contentType', async () => {
     window.localStorage.getItem.returns('dummy-key');
     const args = ['lens', 'channels', 'xyz'];
     const result = await FIREFLY(...args);
-    console.log(result.message)
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
     expect(result.message).to.include('channels');
     expect(result.message).to.include('contentType');
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should handle fetch response not ok (status != 2xx)', async () => {
@@ -72,6 +75,7 @@ describe('FIREFLY', () => {
     const args = ['lens', 'posts', 'xyz'];
     const result = await FIREFLY(...args);
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
     it('should return rate limit error when response status === 429', async () => {
@@ -84,6 +88,7 @@ describe('FIREFLY', () => {
     const args = ['lens', 'posts', 'xyz'];
     const result = await FIREFLY(...args);
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT);
+    expect(result.functionName).to.equal('FIREFLY')
   });
 
   it('should return empty array if response.data is not an array', async () => {
@@ -122,6 +127,7 @@ describe('FIREFLY', () => {
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
     expect(result.message).to.equal('An unexpected error occured');
     expect(result.reason.message).to.equal('Network failed');
+    expect(result.functionName).to.equal('FIREFLY')
   });
   it('should trim and format identifier into query string', async () => {
   window.localStorage.getItem.returns('key');

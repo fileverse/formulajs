@@ -1,11 +1,10 @@
-import { fromTimeStampToBlock } from './from-timestamp-to-block.js'
+import * as fromTimeStampToBlockUtil from './from-timestamp-to-block.js'
 import { ERROR_MESSAGES_FLAG } from './constants.js'
 import { toTimestamp } from './toTimestamp.js'
-import { isAddress } from './is-address.js'
-import { fromEnsNameToAddress } from './from-ens-name-to-address.js'
+import * as isAddressUtil from './is-address.js'
+import * as fromEnsNameToAddressUtil from './from-ens-name-to-address.js'
 import { errorMessageHandler } from './error-messages-handler.js'
 import { SERVICES_API_KEY } from '../crypto-constants.js'
-
 export async function handleScanRequest({
   type,
   address,
@@ -24,9 +23,9 @@ export async function handleScanRequest({
     GNOSIS: { url: 'https://api.gnosisscan.io/api', apiKeyName: SERVICES_API_KEY.Gnosisscan }
   }
 
-  if (!isAddress(address)) {
+  if (!isAddressUtil.default.isAddress(address)) {
     const ensName = address
-    address = await fromEnsNameToAddress(address)
+    address = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(address)
     if (!address) {
       return errorMessageHandler(ERROR_MESSAGES_FLAG.ENS, ensName, functionName)
     }
@@ -59,8 +58,8 @@ export async function handleScanRequest({
 
     if (!isNaN(startDate) && !isNaN(endDate)) {
       const [startBlock, endBlock] = await Promise.all([
-        fromTimeStampToBlock(toTimestamp(startDate), network, apiKey),
-        fromTimeStampToBlock(toTimestamp(endDate), network, apiKey)
+        fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(startDate), network, apiKey),
+        fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(endDate), network, apiKey)
       ])
       url += `&startblock=${startBlock || '0'}&endblock=${endBlock || '99999999'}`
     }

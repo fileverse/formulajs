@@ -1,7 +1,7 @@
 /* global window */
 
 import { SERVICES_API_KEY } from './crypto-constants.js'
-import { fromTimeStampToBlock } from './utils/from-timestamp-to-block.js'
+import * as fromTimeStampToBlockUtil from './utils/from-timestamp-to-block.js'
 import {
   CHAIN_ID_MAP,
   BLOCKSCOUT_CHAINS_MAP,
@@ -11,13 +11,12 @@ import {
 } from './utils/constants.js'
 import { handleScanRequest } from './utils/handle-explorer-request.js'
 import { toTimestamp } from './utils/toTimestamp.js'
-import { isAddress } from './utils/is-address.js'
-import { fromEnsNameToAddress } from './utils/from-ens-name-to-address.js'
-import { fromUsernameToFid } from './utils/from-username-to-fid.js'
+import * as isAddressUtil from './utils/is-address.js'
+import * as fromEnsNameToAddressUtil from './utils/from-ens-name-to-address.js'
+import * as fromUsernameToFidUtil  from './utils/from-username-to-fid.js'
 import { removeNestedStructure } from './utils/remove-nested-structure.js'
 import * as utils from './utils/common.js'
 import { checkRequiredParams, errorMessageHandler } from './utils/error-messages-handler.js'
-
 export async function FIREFLY() {
   const [platform, contentType, identifier, start = 0, end = 10] = utils.argsToArray(arguments)
   const missingParamsError = checkRequiredParams({ platform, contentType, identifier })
@@ -186,7 +185,7 @@ export async function FARCASTER() {
 
   try {
     const res = await fetch(url.toString(), { headers })
-    if (!res.ok) errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
+    if (!res.ok) return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
 
     const json = await res.json()
     if (!Array.isArray(json?.data)) return []
@@ -234,9 +233,9 @@ export async function BLOCKSCOUT() {
     endTimestamp = toTimestamp(endTimestamp)
   }
 
-  if (!isAddress(address)) {
+  if (!isAddressUtil.default.isAddress(address)) {
     const ensName = address
-    address = await fromEnsNameToAddress(address)
+    address = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(address)
     if (!address) {
       return errorMessageHandler(ERROR_MESSAGES_FLAG.ENS, ensName)
     }
@@ -364,7 +363,7 @@ export async function NEYNAR() {
   const API_KEY = window.localStorage.getItem(SERVICES_API_KEY.Neynar)
   if (!API_KEY) return errorMessageHandler(ERROR_MESSAGES_FLAG.MISSING_KEY, SERVICES_API_KEY.Neynar)
 
-  const fid = await fromUsernameToFid(username, API_KEY)
+  const fid = await fromUsernameToFidUtil.default.fromUsernameToFid(username, API_KEY)
 
   if (!fid) {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { username })
@@ -467,7 +466,7 @@ export async function ETHERSCAN(...args) {
 
   const chainId = CHAIN_ID_MAP[chain]
 
-  if (!chainId.toString()) {
+  if (!chainId?.toString()) {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_CHAIN, chain)
   }
   const API_KEY = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
@@ -656,11 +655,11 @@ export async function EOA() {
   // Map: finalAddress => ENS name (if applicable)
   const ADDRESS_MAP = {}
   for (const input of INPUTS) {
-    if (isAddress(input)) {
+    if (isAddressUtil.default.isAddress(input)) {
       ADDRESS_MAP[input.toLowerCase()] = null // it's a direct address
     } else {
       try {
-        const resolved = await fromEnsNameToAddress(input) // ENS -> address
+        const resolved = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(input) // ENS -> address
         if (resolved) ADDRESS_MAP[resolved.toLowerCase()] = input
       } catch {
         return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { addresses })
@@ -680,7 +679,7 @@ export async function EOA() {
           `&module=account&action=${action}&address=${slice}` +
           `&page=${page}&offset=100&apikey=${API_KEY}`
         const data = await fetchJSON(url)
-        if (typeof data === 'string') return data
+        if (!Array.isArray(data)) return data
         data.forEach((tx) =>
           out.push({
             chain,
@@ -693,12 +692,12 @@ export async function EOA() {
       continue
     }
     if (category === 'txns') {
-      const startBlock = await fromTimeStampToBlock(toTimestamp(startTime), chain, API_KEY)
-      const endBlock = await fromTimeStampToBlock(toTimestamp(endTime), chain, API_KEY)
-      if (!startBlock.toString()) {
+      const startBlock = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(startTime), chain, API_KEY)
+      const endBlock = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(endTime), chain, API_KEY)
+      if (!startBlock?.toString()) {
         return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { startTime })
       }
-      if (!endBlock.toString()) {
+      if (!endBlock?.toString()) {
         return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { endTime })
       }
       for (const addr of ADDRS) {
@@ -708,7 +707,7 @@ export async function EOA() {
           `&startblock=${startBlock}&endblock=${endBlock}` +
           `&page=${page}&offset=${offset}&sort=asc&apikey=${API_KEY}`
         const data = await fetchJSON(url)
-        if (typeof data === 'string') return data
+        if (!Array.isArray(data)) return data
         data.forEach((tx) =>
           out.push({
             chain,
@@ -788,11 +787,11 @@ export async function SAFE() {
 
   const chainIdentifier = SAFE_CHAIN_MAP[chain]
 
-  if (!chainIdentifier) return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_CHAIN, { chain })
+  if (!chainIdentifier) return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_CHAIN, chain)
 
-  if (!isAddress(address)) {
+  if (!isAddressUtil.default.isAddress(address)) {
     const ensName = address
-    address = await fromEnsNameToAddress(address)
+    address = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(address)
     if (!address) {
       return errorMessageHandler(ERROR_MESSAGES_FLAG.ENS, ensName)
     }
@@ -889,7 +888,12 @@ export async function UNISWAP() {
       return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
     }
     const json = await res.json()
-    return removeNestedStructure(json)
+    if(Array.isArray(json)){
+          return removeNestedStructure(json)
+    } else {
+    return json
+    }
+
   } catch (err) {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err)
   }
@@ -910,7 +914,12 @@ export async function AAVE() {
       return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status)
     }
     const json = await res.json()
-    return removeNestedStructure(json)
+    if(Array.isArray(json)){
+          return removeNestedStructure(json)
+    } else {
+    return json
+    }
+
   } catch (err) {
     return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err)
   }
