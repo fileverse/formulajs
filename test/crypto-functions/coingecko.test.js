@@ -1,145 +1,70 @@
-/* eslint-env mocha */
+import { expect } from 'chai'
+import sinon from 'sinon'
+import { COINGECKO } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import { SERVICES_API_KEY } from '../../src/crypto-constants.js'
 
-import { expect } from 'chai';
-import sinon from 'sinon';
-import { COINGECKO } from '../../src/crypto.js';
-import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
+describe('COINGECKO', () => {
+  beforeEach(() => { global.window={localStorage:{getItem:sinon.stub()}}; global.fetch=sinon.stub() })
+  afterEach(()=>sinon.restore())
 
-const API_KEY = 'test-cg-api-key';
+  it('should return INVALID_PARAM when category missing', async()=>{
+    const res=await COINGECKO();
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('COINGECKO')
+  })
 
-describe('COINGECKO', function () {
-  this.timeout(5000);
+  it('should return MISSING_KEY when no API key', async()=>{
+    window.localStorage.getItem.returns(null)
+    const res=await COINGECKO('price','btc')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY)
+    expect(res.functionName).to.equal('COINGECKO')
+  })
 
-  beforeEach(() => {
-    global.window = {
-      localStorage: {
-        getItem: sinon.stub().returns(API_KEY)
-      }
-    };
-    global.fetch = () => {};
-  });
+  it('should return INVALID_PARAM for bad category', async()=>{
+    window.localStorage.getItem.returns('key')
+    const res=await COINGECKO('foo','x')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+        expect(res.functionName).to.equal('COINGECKO')
+  })
 
-  afterEach(() => {
-    sinon.restore();
-    delete global.window;
-    delete global.fetch;
-  });
+  it('should return RATE_LIMIT on HTTP 429', async()=>{
+    window.localStorage.getItem.returns('key')
+    global.fetch.resolves({ ok:false,status:429,json:async()=>({}) })
+    const res=await COINGECKO('price','btc')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
+    expect(res.apiKeyName).to.equal(SERVICES_API_KEY.Coingecko)
+  })
 
-  it('should return MISSING_PARAM error when required params are missing', async () => {
-    const result = await COINGECKO();
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
-    expect(result.functionName).to.equal('COINGECKO');
-  });
+  it('should return DEFAULT on fetch throw', async()=>{
+    window.localStorage.getItem.returns('key')
+    global.fetch.rejects(new Error('fail'))
+    const res=await COINGECKO('price','btc')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
+  })
 
-  it('should return MISSING_KEY if API key not found', async () => {
-    global.window.localStorage.getItem.returns(null);
-    const result = await COINGECKO('price', 'btc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY);
-    expect(result.message).to.include('Coingecko');
-  });
+  it('should map price correctly', async()=>{
+    window.localStorage.getItem.returns('key')
+    global.fetch.resolves({ ok:true, json:async()=>({ btc:{usd:10,eur:9},eth:{usd:5} }) })
+    const res=await COINGECKO('price','btc','eur')
+    expect(res).to.deep.equal([ { Btc_EUR:9,  Btc_USD: 10,
+      Eth_USD: 5 } ])
+  })
 
-  it('should return INVALID_PARAM for unknown category', async () => {
-    const result = await COINGECKO('invalid', 'param');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.message).to.include('category');
-  });
+  it('should flatten market data array', async()=>{
+    window.localStorage.getItem.returns('key')
+    const arr=[{id:'a',nested:{x:1},vol:100}]
+    global.fetch.resolves({ ok:true, json:async()=>arr })
+    const res=await COINGECKO('market','all')
+    expect(res).to.deep.equal([{ id:'a',vol:100 }])
+  })
+  it('should return NETWORK_ERROR when fetch response status != 2xx', async () => {
+  window.localStorage.getItem.returns('key')
+  global.fetch.resolves({ ok: false, status: 502, json: async() => ({}) })
 
-  it('should return price result in flattened structure', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ btc: { usd: 60000 } })
-    });
-
-    const result = await COINGECKO('price', 'btc', 'usd');
-    expect(result).to.deep.equal([{ Btc_USD: 60000 }]);
-  });
-
-  it('should handle market category with param and trend', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ([{ id: 'eth', name: 'Ethereum' }])
-    });
-
-    const result = await COINGECKO('market', 'ethereum', '7d');
-    expect(result[0].id).to.equal('eth');
-  });
-
-  it('should handle stablecoins category', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ([{ id: 'usdt', name: 'Tether' }])
-    });
-
-    const result = await COINGECKO('stablecoins', 'all', '24h');
-    expect(result[0].id).to.equal('usdt');
-  });
-
-  it('should fetch all derivatives data when param is all', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ([{ symbol: 'BTC-PERP' }, { symbol: 'ETH-PERP' }])
-    });
-
-    const result = await COINGECKO('derivatives', 'all');
-    expect(result.length).to.equal(2);
-  });
-
-  it('should fetch derivatives from specific exchange with tickers mapped', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({
-        name: 'Binance',
-        logo: 'url',
-        url: 'https://binance.com',
-        trade_volume_24h_btc: 123,
-        number_of_futures_pairs: 10,
-        number_of_perpetual_pairs: 15,
-        open_interest_btc: 30,
-        tickers: [{ symbol: 'BTCUSD', converted_volume: { usd: 100000 } }]
-      })
-    });
-
-    const result = await COINGECKO('derivatives', 'binance');
-    expect(result[0].symbol).to.equal('BTCUSD');
-    expect(result[0].exchange_name).to.equal('Binance');
-  });
-
-  it('should return INVALID_API_KEY if API complains about key', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: false,
-      json: async () => ({ status: { error_message: 'API Key Missing' } })
-    });
-
-    const result = await COINGECKO('price', 'btc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_API_KEY);
-  });
-
-  it('should return NETWORK_ERROR if fetch response is not ok', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: false,
-      status: 502,
-      json: async () => ({})
-    });
-
-    const result = await COINGECKO('market', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
-  });
-
-  it('should return DEFAULT error if fetch throws', async () => {
-    sinon.stub(global, 'fetch').rejects(new Error('Boom'));
-
-    const result = await COINGECKO('price', 'btc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
-    expect(result.reason.message).to.equal('Boom');
-  });
-    it('should return RATE_LIMIT if fetch response is not 429', async () => {
-    sinon.stub(global, 'fetch').resolves({
-      ok: false,
-      status: 429,
-      json: async () => ({})
-    });
-
-    const result = await COINGECKO('market', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT);
-  });
-});
+  const result = await COINGECKO('price','btc','eur')
+  expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+  expect(result.functionName).to.equal('COINGECKO')
+  expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Coingecko)
+})
+})

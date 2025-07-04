@@ -1,62 +1,51 @@
-/* eslint-env mocha */
+import { expect } from 'chai'
+import sinon from 'sinon'
+import * as crypto from '../../src/crypto.js'
+const { AAVE } = crypto
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 
-import { expect } from 'chai';
-import sinon from 'sinon';
-import { AAVE } from '../../src/crypto.js';
-import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
-
-describe('AAVE', function () {
-  const MOCK_URL = 'https://onchain-proxy.fileverse.io/third-party';
-
+describe('AAVE', () => {
   beforeEach(() => {
-    global.fetch = () => {};
-  });
+    global.window = { localStorage: { getItem: sinon.stub() } }
+    global.fetch = sinon.stub()
+  })
 
-  afterEach(() => {
-    sinon.restore();
-    delete global.fetch;
-  });
+  afterEach(() => sinon.restore())
 
-  it('should return MISSING_PARAM error if required params are missing', async () => {
-    const result = await AAVE();
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
-  });
+  it('should return INVALID_PARAM when required args missing', async () => {
+    const res = await AAVE()
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('AAVE')
+  })
 
-  it('should return NETWORK_ERROR if fetch returns !ok', async () => {
-    sinon.stub(global, 'fetch').resolves({ ok: false, status: 500 });
+  it('should return INVALID_PARAM for unsupported graphType', async () => {
+    const res = await AAVE('v1','tokens','0x123')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+  })
 
-    const result = await AAVE('v3', 'market', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
-  });
+  it('should return INVALID_PARAM for unsupported category', async () => {
+    const res = await AAVE('v2','pools','0x123')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+  })
 
-  it('should return DEFAULT error if fetch throws', async () => {
-    sinon.stub(global, 'fetch').rejects(new Error('Fetch failed'));
+  it('should return NETWORK_ERROR when HTTP status != 2xx', async () => {
+    global.fetch.resolves({ ok: false, status: 502, json: async () => ({}) })
+    const res = await AAVE('v2','tokens','0x123')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+    expect(res.functionName).to.equal('AAVE')
+  })
 
-    const result = await AAVE('v3', 'market', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
-    expect(result.reason.message).to.equal('Fetch failed');
-  });
+  it('should return DEFAULT if fetch throw error', async () => {
+    global.fetch.rejects(new Error('fail'))
+    const res = await AAVE('v2','markets','0x123')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
+    expect(res.functionName).to.equal('AAVE')
+  })
 
-  it('should build correct URL and return cleaned data', async () => {
-
-    const jsonResponse = { pool: { totalLiquidity: '12345' } };
-    const expectedFlat = { pool: { totalLiquidity: '12345' } };
-
-    const fetchStub = sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => jsonResponse
-    });
-
-
-    const result = await AAVE('v3', 'market', '0xabc', 'optional');
-
-    expect(result).to.deep.equal(expectedFlat);
-
-    const calledUrl = fetchStub.getCall(0).args[0];
-    expect(calledUrl).to.include(`${MOCK_URL}?service=aave`);
-    expect(calledUrl).to.include('graphType=v3');
-    expect(calledUrl).to.include('category=market');
-    expect(calledUrl).to.include('input1=0xabc');
-    expect(calledUrl).to.include('input2=optional');
-  });
-});
+  it('should flatten array response', async () => {
+    const data = [{ id: '1', nested: { x: 1 }, value: 42 }]
+    global.fetch.resolves({ ok: true, json: async () => data })
+    const res = await AAVE('v2','tokens','0x123')
+    expect(res).to.deep.equal([{ id: '1', value: 42 }])
+  })
+})

@@ -1,222 +1,159 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
-import sinon from 'sinon';
-import { BLOCKSCOUT } from '../../src/crypto.js';
-import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
-import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js';
-import * as isAddressModule from '../../src/utils/is-address.js';
+import { expect } from 'chai'
+import sinon from 'sinon'
+import { BLOCKSCOUT } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js'
+import * as isAddressModule from '../../src/utils/is-address.js'
 
-describe('BLOCKSCOUT', function () {
-  this.timeout(5000);
-
+describe('BLOCKSCOUT', () => {
   beforeEach(() => {
-    global.window = {
-      localStorage: {
-        getItem: sinon.stub()
-      }
-    };
-    global.fetch = () => {};
-    global.document = {
-    createElement: () => ({ set src(_) {}, set onload(_) {}, set onerror(_) {} }),
-    head: { appendChild: () => {} }
-  };
-  });
+    global.window = { localStorage: { getItem: sinon.stub() } }
+    global.fetch = sinon.stub()
+  })
 
   afterEach(() => {
-    sinon.restore();
-    delete global.window;
-    delete global.fetch;
-    delete global.document;
-  });
+    sinon.restore()
+    delete global.window
+    delete global.fetch
+  })
 
-  it('should return missing param error if address or type is missing', async () => {
-    const result = await BLOCKSCOUT();
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+  it('should return INVALID_PARAM when address or type is missing', async () => {
+    const result = await BLOCKSCOUT()
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should return MAX_PAGE_LIMIT error if offset > MAX_PAGE_LIMIT', async () => {
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum', null, null, 1, 10000);
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT);
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+  it('should return INVALID_PARAM when offset exceeds MAX_PAGE_LIMIT', async () => {
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum', undefined, undefined, 1, 99999)
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should return INVALID_CHAIN error if chain is not supported', async () => {
-sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'fakechain');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_CHAIN);
-    expect(result.message).to.include('fakechain');
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+  it('should return INVALID_PARAM for unsupported chain', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'fakechain')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should return INVALID_PARAM if type is unsupported', async () => {
-sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    const result = await BLOCKSCOUT('0xabc', 'invalid', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.message).to.include('type');
-    expect(result.message).to.include('invalid');
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+  it('should return INVALID_PARAM for unsupported type', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const result = await BLOCKSCOUT('0xabc', 'invalid', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should resolve ENS name to address and return ENS error if resolution fails', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(false);
-    sinon.stub(fromEnsNameToAddress.default, 'fromEnsNameToAddress').resolves(null);
+  it('should return ENS error if ENS resolution fails', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(false)
+    sinon.stub(fromEnsNameToAddress.default, 'fromEnsNameToAddress').resolves(null)
 
-    const result = await BLOCKSCOUT('vitalik.eth', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.ENS);
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+    const result = await BLOCKSCOUT('vitalik.eth', 'txns', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.ENS)
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should resolve ENS name to address and fetch data if valid', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(false);
-    sinon.stub(fromEnsNameToAddress.default, 'fromEnsNameToAddress').resolves('0xResolved');
 
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: [] })
-    });
+  it('should return NETWORK_ERROR when fetch response status != 2xx', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+   global.fetch.resolves({ ok: false, status: 503 })
 
-    const result = await BLOCKSCOUT('vitalik.eth', 'tokens', 'ethereum');
-    expect(result).to.deep.equal([]);
-  });
-
-  it('should return NETWORK_ERROR if fetch fails with non-ok response', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: false,
-      status: 503
-    });
-
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
-    expect(result.message).to.include('503');
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+    expect(result.message).to.include('503')
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
   it('should return DEFAULT error if fetch throws', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').rejects(new Error('Boom'));
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.rejects(new Error('Boom'))
 
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
-    expect(result.reason.message).to.equal('Boom');
-    expect(result.functionName).to.equal('BLOCKSCOUT');
-  });
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
+    expect(result.reason).to.equal('Boom')
+    expect(result.functionName).to.equal('BLOCKSCOUT')
+  })
 
-  it('should return result directly for stat type', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ transactions_count: '1' })
-    });
+  it('should return stat array on success', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const responseJson = { transaction_count: '1' }
+    global.fetch.resolves({ ok: true, json: async () => responseJson })
 
-    const result = await BLOCKSCOUT('0xabc', 'stat', 'ethereum');
-    expect(result).to.deep.equal([{ transactions_count: '1' }]);
-  });
+    const result = await BLOCKSCOUT('0xabc', 'stat', 'ethereum')
+    expect(result).to.deep.equal([responseJson])
+  })
 
-  it('should return custom error if result includes "Invalid parameter(s)"', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: 'Invalid parameter(s)' })
-    });
+  it('should return txns array on success', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const txns = [{ blockNumber: '1' }]
+    global.fetch.resolves({ ok: true, json: async () => ({ result: txns }) })
 
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.CUSTOM);
-    expect(result.message).to.equal('Invalid parameters');
-  });
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
+    expect(result).to.deep.equal(txns)
+  })
 
-  it('should return custom error if result includes "Not found"', async () => {
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: 'Not found' })
-    });
+  it('should return INVALID_PARAM if result includes "Invalid parameter(s)"', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: true, json: async () => ({ result: 'Invalid parameter(s)' }) })
 
-    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.CUSTOM);
-    expect(result.message).to.equal('Address information not found');
-  });
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.message).to.equal('Invalid parameters')
+  })
 
+  it('should return INVALID_PARAM if result includes "Not found"', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: true, json: async () => ({ result: 'Not found' }) })
 
-it('should convert date strings to valid UNIX timestamps', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  const fetchStub = sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [] })
-  });
+    const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(result.message).to.equal('Address information not found')
+  })
 
-  await BLOCKSCOUT('0xabc', 'txns', 'ethereum', '01/01/2023', '01/01/2024');
+  it('should convert date strings in MM/DD/YYYY to UNIX timestamps', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ result: [] }) })
 
-  const url = new URL(fetchStub.firstCall.args[0]);
-  expect(parseInt(url.searchParams.get('start_timestamp'))).to.be.a('number');
-  expect(parseInt(url.searchParams.get('end_timestamp'))).to.be.a('number');
-});
+    await BLOCKSCOUT('0xabc', 'txns', 'ethereum', '01/01/2023', '12/31/2023')
 
-  it('should default chain to "ethereum" when not provided', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  const fetchStub = sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [] })
-  });
+    const url = new URL(fetchStub.firstCall.args[0])
+    expect(+url.searchParams.get('start_timestamp')).to.be.a('number')
+    expect(+url.searchParams.get('end_timestamp')).to.be.a('number')
+  })
 
-  await BLOCKSCOUT('0xabc', 'txns');
+  it('should default chain to "ethereum" when omitted', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ result: [] }) })
 
-  const url = new URL(fetchStub.firstCall.args[0]);
-  expect(url.hostname).to.include('eth.blockscout.com');
-});
+    await BLOCKSCOUT('0xabc', 'txns')
 
-it('should include correct page and offset in the query string', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  const fetchStub = sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [] })
-  });
+    const url = new URL(fetchStub.firstCall.args[0])
+    expect(url.hostname).to.equal('eth.blockscout.com')
+  })
 
-  await BLOCKSCOUT('0xabc', 'txns', 'ethereum', null, null, 3, 50);
+  it('should include correct page and offset in query string', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ result: [] }) })
 
-  const url = new URL(fetchStub.firstCall.args[0]);
-  expect(url.searchParams.get('page')).to.equal('3');
-  expect(url.searchParams.get('offset')).to.equal('50');
-});
-it('should fallback to default startTimestamp if not provided', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  const nowStub = sinon.stub(Date, 'now').returns(1700000000000); // fixed time
-  const fetchStub = sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [] })
-  });
+    await BLOCKSCOUT('0xabc', 'txns', 'ethereum', undefined, undefined, 3, 50)
 
-  await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
+    const url = new URL(fetchStub.firstCall.args[0])
+    expect(url.searchParams.get('page')).to.equal('3')
+    expect(url.searchParams.get('offset')).to.equal('50')
+  })
 
-  const url = new URL(fetchStub.firstCall.args[0]);
-  const expectedStart = Math.floor((1700000000000 - 30 * 24 * 60 * 60 * 1000) / 1000).toString();
-  expect(url.searchParams.get('start_timestamp')).to.equal(expectedStart);
+  it('should fallback to default startTimestamp if not provided', async () => {
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    const nowStub = sinon.stub(Date, 'now').returns(1700000000000)
+    const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ result: [] }) })
 
-  nowStub.restore();
-});
+    await BLOCKSCOUT('0xabc', 'txns', 'ethereum')
 
-it('should return empty array for tokens type with valid address', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [] })
-  });
+    const url = new URL(fetchStub.firstCall.args[0])
+    const expectedStart = Math.floor((1700000000000 - 30 * 24 * 3600 * 1000) / 1000).toString()
+    expect(url.searchParams.get('start_timestamp')).to.equal(expectedStart)
 
-  const result = await BLOCKSCOUT('0xabc', 'tokens', 'ethereum');
-  expect(result).to.deep.equal([]);
-});
-it('should return txns array if valid response', async () => {
-  sinon.stub(isAddressModule.default, 'isAddress').returns(true);
-  const mockTxns = [{ blockNumber: '1', timeStamp: '123456' }];
-  sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: mockTxns })
-  });
-
-  const result = await BLOCKSCOUT('0xabc', 'txns', 'ethereum');
-  expect(result).to.deep.equal(mockTxns);
-});
-
+    nowStub.restore()
+  })
 });

@@ -1,10 +1,9 @@
 import * as fromTimeStampToBlockUtil from './from-timestamp-to-block.js'
-import { ERROR_MESSAGES_FLAG } from './constants.js'
 import { toTimestamp } from './toTimestamp.js'
 import * as isAddressUtil from './is-address.js'
 import * as fromEnsNameToAddressUtil from './from-ens-name-to-address.js'
-import { errorMessageHandler } from './error-messages-handler.js'
 import { SERVICES_API_KEY } from '../crypto-constants.js'
+import { EnsError, InvalidApiKeyError, NetworkError, RateLimitError, ValidationError } from './error-instances.js'
 export async function handleScanRequest({
   type,
   address,
@@ -23,23 +22,18 @@ export async function handleScanRequest({
     GNOSIS: { url: 'https://api.gnosisscan.io/api', apiKeyName: SERVICES_API_KEY.Gnosisscan }
   }
 
-  if (!isAddressUtil.default.isAddress(address)) {
+  if (!isAddressUtil.default.isAddress(address) && type !== 'gas') {
     const ensName = address
     address = await fromEnsNameToAddressUtil.default.fromEnsNameToAddress(address)
     if (!address) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.ENS, ensName, functionName)
+      throw new EnsError(ensName)
     }
   }
 
   const apiInfo = API_INFO_MAP[functionName]
   const baseUrl = apiInfo?.url
+    if (!baseUrl) throw new ValidationError(`Api not found for: ${functionName}`)
 
-  if (!baseUrl) {
-    return errorMessageHandler(ERROR_MESSAGES_FLAG.CUSTOM, {
-      message: 'Api not found',
-      reason: ` Api not found for: ${functionName}`
-    }, functionName)
-  }
 
   const ACTION_MAP = {
     'all-txns': 'txlist',
@@ -49,7 +43,7 @@ export async function handleScanRequest({
   }
 
   const action = ACTION_MAP[type]
-  if (!action) return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_PARAM, { type }, functionName)
+  if (!action) throw new ValidationError(`Invalid type: ${type}`)
 
   let url = `${baseUrl}?chainid=${chainId}&module=account&action=${action}&apikey=${apiKey}`
 
@@ -65,23 +59,20 @@ export async function handleScanRequest({
     }
     url += `&page=${page}&offset=${offset}`
   }
-
-  try {
     const res = await fetch(url)
     if (!res.ok) {
-      return errorMessageHandler(ERROR_MESSAGES_FLAG.NETWORK_ERROR, res.status, functionName)
+      throw new NetworkError(apiInfo.apiKeyName, res.status)
     }
     const json = await res.json()
 
     if (typeof json.result === 'string') {
-      if (json.result.includes('Invalid API Key'))
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.INVALID_API_KEY, apiInfo.apiKeyName, functionName)
+      if (json.result.includes('Invalid API Key')){
+          throw new InvalidApiKeyError(apiInfo.apiKeyName)   
+      }
+   
       if (json.result.includes('Max rate limit reached'))
-        return errorMessageHandler(ERROR_MESSAGES_FLAG.RATE_LIMIT, apiInfo.apiKeyName, functionName)
+        throw new RateLimitError(apiInfo.apiKeyName)
     }
 
     return json.result
-  } catch (err) {
-    return errorMessageHandler(ERROR_MESSAGES_FLAG.DEFAULT, err, functionName)
-  }
 }

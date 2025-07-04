@@ -409,7 +409,7 @@ If "derivatives": exchange name (e.g., "binance_futures", "hyperliquid", "weex-f
       },
       {
         name: 'chain',
-        detail: 'The blockchain to query. By default on Ethereum mainnet.',
+        detail: 'The blockchain to query. By default on Ethereum mainnet. Can be gnosis, arbitrum, optimism, soneium, unichain  ',
         example: `"ethereum"`,
         require: 'o',
         type: 'string'

@@ -1,132 +1,114 @@
 /* eslint-env mocha */
 
-import { expect } from 'chai';
-import sinon from 'sinon';
-import { GNOSIS } from '../../src/crypto.js';
-import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
-import * as isAddressUtil from '../../src/utils/is-address.js';
-import * as fromEnsNameToAddressUtil from '../../src/utils/from-ens-name-to-address.js';
-import * as fromTimeStampToBlockUtil from '../../src/utils/from-timestamp-to-block.js';
+import { expect } from 'chai'
+import sinon from 'sinon'
+import * as crypto from '../../src/crypto.js'
+const { GNOSIS } = crypto
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import * as isAddressModule from '../../src/utils/is-address.js'
+import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js'
 
-const API_KEY = 'gnosis-api-key';
-
-describe('GNOSIS', function () {
-  this.timeout(5000);
-
+describe('GNOSIS', () => {
   beforeEach(() => {
-    global.window = {
-      localStorage: {
-        getItem: sinon.stub().returns(API_KEY)
-      }
-    };
-    global.fetch = () => {};
-  });
+    global.window = { localStorage: { getItem: sinon.stub() } }
+    global.fetch = sinon.stub()
+  })
 
-  afterEach(() => {
-    sinon.restore();
-    delete global.window;
-    delete global.fetch;
-  });
+  afterEach(() => sinon.restore())
 
-  it('should return MISSING_PARAM error if required params are missing', async () => {
-    const result = await GNOSIS();
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+  it('should return INVALID_PARAM when type is missing', async () => {
+    const res = await GNOSIS()
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('GNOSIS')
+  })
 
-  it('should return MISSING_KEY error if no API key found', async () => {
-    global.window.localStorage.getItem.returns(null);
-    const result = await GNOSIS('all-txns', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY);
-    expect(result.message).to.include('Gnosisscan');
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+  it('should return INVALID_PARAM when address is missing for txns types', async () => {
+    window.localStorage.getItem.returns('key')
+    const res = await GNOSIS('all-txns')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('GNOSIS')
+  })
 
-  it('should return MAX_PAGE_LIMIT error if limit > 250', async () => {
-    const result = await GNOSIS('all-txns', '0xabc', null, null, 1, 1000);
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+  it('should succeed for gas without address', async () => {
+    window.localStorage.getItem.returns('key')
+    const responseJson = [{ gas: 1111 }]
+    global.fetch.resolves({ ok: true, json: async () => ({ result: responseJson }) })
 
-  it('should return ENS error if ENS name fails resolution', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(false);
-    sinon.stub(fromEnsNameToAddressUtil.default, 'fromEnsNameToAddress').resolves(null);
-    const result = await GNOSIS('all-txns', 'vitalik.eth');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.ENS);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+    const res = await GNOSIS('gas')
+    expect(res).to.deep.equal(responseJson)
+  })
 
-  it('should return INVALID_PARAM if type is not supported', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    const result = await GNOSIS('invalid-type', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+  it('should return MISSING_KEY when no API key', async () => {
+    window.localStorage.getItem.returns(null)
+    const res = await GNOSIS('gas')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY)
+    expect(res.functionName).to.equal('GNOSIS')
+  })
 
-  it('should convert timestamps and return result', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(fromTimeStampToBlockUtil.default, 'fromTimeStampToBlock')
-      .onFirstCall().resolves('123')
-      .onSecondCall().resolves('456');
+  it('should return INVALID_PARAM when limit exceeds MAX_PAGE_LIMIT', async () => {
+    window.localStorage.getItem.returns('key')
+    const res = await GNOSIS('all-txns','0xabc',undefined,undefined,1,99999)
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('GNOSIS')
+  })
 
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: [{ tx: 'ok' }] })
-    });
+  it('should return ENS error if address is ENS and resolution fails', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(false)
+    sinon.stub(fromEnsNameToAddress.default, 'fromEnsNameToAddress').resolves(null)
 
-    const result = await GNOSIS('all-txns', '0xabc', '2024-01-01', '2024-01-31');
-    expect(result).to.deep.equal([{ tx: 'ok' }]);
-  });
+    const result = await GNOSIS('all-txns', 'vitalik.eth')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.ENS)
+    expect(result.functionName).to.equal('GNOSIS')
+  })
+  it('should resolve successfully with righh ens name', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(false)
+    sinon.stub(fromEnsNameToAddress.default, 'fromEnsNameToAddress').resolves('0xjoshua')
+    const responseJson = ['data']
+    global.fetch.resolves({ ok: true, json: async () => ({ result: responseJson }) })
 
-  it('should return NETWORK_ERROR on failed fetch', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({ ok: false, status: 502 });
-    const result = await GNOSIS('all-txns', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+    const result = await GNOSIS('all-txns', 'vitalik.eth')
+    expect(result).to.deep.equal(responseJson)
+  })
 
-  it('should return INVALID_API_KEY error if API returns such message', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: 'Invalid API Key' })
-    });
-    const result = await GNOSIS('all-txns', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_API_KEY);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+  it('should return NETWORK_ERROR when fetch response status != 2xx', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: false, status: 502 })
 
-  it('should return RATE_LIMIT error if API rate limits', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ result: 'Max rate limit reached' })
-    });
-    const result = await GNOSIS('all-txns', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT);
-    expect(result.functionName).to.equal('GNOSIS');
-  });
+    const result = await GNOSIS('all-txns', '0xabc', '01/01/2023', '01/02/2023', 1, 10)
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+    expect(result.functionName).to.equal('GNOSIS')
+  })
 
-  it('should return DEFAULT error if fetch throws', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').rejects(new Error('unexpected'));
-    const result = await GNOSIS('all-txns', '0xabc');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
-    expect(result.functionName).to.equal('GNOSIS');
-    expect(result.reason.message).to.equal('unexpected');
-  });
-  it('should resolve ENS name and fetch data if valid', async () => {
-  sinon.stub(isAddressUtil.default, 'isAddress').returns(false);
-  sinon.stub(fromEnsNameToAddressUtil.default, 'fromEnsNameToAddress').resolves('0xResolvedAddress');
+  it('should return INVALID_API_KEY when API key is invalid', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: true, json: async () => ({ result: 'Invalid API Key' }) })
 
-  sinon.stub(global, 'fetch').resolves({
-    ok: true,
-    json: async () => ({ result: [{ tx: 'mock-tx' }] })
-  });
+    const result = await GNOSIS('gas')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_API_KEY)
+    expect(result.functionName).to.equal('GNOSIS')
+  })
 
-  const result = await GNOSIS('all-txns', 'vitalik.eth');
-  expect(result).to.deep.equal([{ tx: 'mock-tx' }]);
-});
+  it('should return RATE_LIMIT when rate limit reached', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: true, json: async () => ({ result: 'Max rate limit reached' }) })
 
-});
+    const result = await GNOSIS('gas')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
+    expect(result.functionName).to.equal('GNOSIS')
+  })
+
+  it('should return RATE_LIMIT when network status is 429', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    global.fetch.resolves({ ok: false, status: 429 })
+
+    const result = await GNOSIS('gas')
+    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
+    expect(result.functionName).to.equal('GNOSIS')
+  })
+})

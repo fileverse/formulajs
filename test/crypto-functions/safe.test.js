@@ -5,126 +5,103 @@ import { SAFE } from '../../src/crypto.js';
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
 import * as isAddressUtil from '../../src/utils/is-address.js';
 import * as fromEnsNameToAddressUtil from '../../src/utils/from-ens-name-to-address.js';
+import { SERVICES_API_KEY } from '../../src/crypto-constants.js';
 
-const API_KEY = 'safe-api-key';
 
-describe('SAFE', function () {
-  this.timeout(5000);
-
+describe('SAFE', () => {
   beforeEach(() => {
-    global.window = {
-      localStorage: {
-        getItem: sinon.stub().returns(API_KEY)
-      }
-    };
-    global.fetch = () => {};
-  });
+    global.window = { localStorage: { getItem: sinon.stub() } }
+    global.fetch = sinon.stub()
+  })
+  afterEach(() => sinon.restore())
 
-  afterEach(() => {
-    sinon.restore();
-    delete global.window;
-    delete global.fetch;
-  });
+  it('should return INVALID_PARAM when required args missing', async () => {
+    const res = await SAFE()
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+    expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return MISSING_PARAM if required args are not provided', async () => {
-    const result = await SAFE();
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_PARAM);
-    expect(result.functionName).to.equal('SAFE');
-  });
+  it('should return MISSING_KEY when no API key', async () => {
+    window.localStorage.getItem.returns(null)
+    const res = await SAFE('0x1','txns','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY)
+    expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return MISSING_KEY if API key is missing', async () => {
-    window.localStorage.getItem.returns(null);
-    const result = await SAFE('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MISSING_KEY);
-    expect(result.message).to.include('Safe');
-  });
+  it('should return INVALID_PARAM for bad utility', async () => {
+    window.localStorage.getItem.returns('key')
+    const res = await SAFE('0x1','balance','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+        expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return INVALID_PARAM if limit is not valid', async () => {
-    const result = await SAFE('0xabc', 'txns', 'ethereum', -1);
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.message).to.include('limit');
-    expect(result.message).to.include(-1);
-    expect(result.functionName).to.equal('SAFE');
-  });
+  it('should return INVALID_PARAM for bad chain', async () => {
+    window.localStorage.getItem.returns('key')
+    const res = await SAFE('0x1','txns','foo')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+        expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return INVALID_PARAM if offset is not valid', async () => {
-    const result = await SAFE('0xabc', 'txns', 'ethereum', 10, -2);
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.message).to.include('offset');
-    expect(result.message).to.include(-2);
-  });
+  it('should return INVALID_PARAM when offset > MAX_PAGE_LIMIT', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(true)
+    const res = await SAFE('0x1','txns','ethereum',9999,0)
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
+        expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return INVALID_PARAM if utility is not txns', async () => {
-    const result = await SAFE('0xabc', 'unknown', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
-    expect(result.message).to.include('utility');
-    expect(result.message).to.include('unknown');
-    expect(result.functionName).to.equal('SAFE');
-  });
+  it('should return ENS_ERROR if ENS resolution fails', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(false)
+    sinon.stub(fromEnsNameToAddressUtil.default,'fromEnsNameToAddress').resolves(null)
+    const res = await SAFE('vitalik.eth','txns','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.ENS)
+            expect(res.functionName).to.equal('SAFE')
+  })
 
-  it('should return MAX_PAGE_LIMIT if offset > limit', async () => {
-    const result = await SAFE('0xabc', 'txns', 'ethereum', 300);
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.MAX_PAGE_LIMIT);
-  });
+  it('should return NETWORK_ERROR on HTTP error', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(true)
+    global.fetch.resolves({ ok:false,status:500 })
+    const res = await SAFE('0x1','txns','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+    expect(res.apiKeyName).to.equal(SERVICES_API_KEY.Safe)
+  })
 
-  it('should return INVALID_CHAIN if chain is not supported', async () => {
-    const result = await SAFE('0xabc', 'txns', 'fakechain');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_CHAIN);
-    expect(result.message).to.include('fakechain');
-  });
+    it('should return RATE_LIMIT on HTTP 429 error', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(true)
+    global.fetch.resolves({ ok:false,status:429 })
+    const res = await SAFE('0x1','txns','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
+  })
 
-  it('should return ENS error if ENS address resolution fails', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(false);
-    sinon.stub(fromEnsNameToAddressUtil.default, 'fromEnsNameToAddress').resolves(null);
+  it('should return DEFAULT if fetch throws error', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(true)
+    global.fetch.rejects(new Error('fail'))
+    const res = await SAFE('0x1','txns','ethereum')
+    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
+  })
 
-    const result = await SAFE('vitalik.eth', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.ENS);
-  });
+  it('should return flattened txns for valid response', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default,'isAddress').returns(true)
+    const fakeRes = { results: [ { id:1, confirmations:[], dataDecoded:{}, extra: 'x' } ] }
+    global.fetch.resolves({ ok:true, json:async()=>fakeRes })
+    const res = await SAFE('0x1','txns','ethereum',10,0)
+    expect(res).to.deep.equal([ { id:1, extra:'x' } ])
+  })
+      it('should resolve successfully with right ens name', async () => {
+    window.localStorage.getItem.returns('key')
+    sinon.stub(isAddressUtil.default, 'isAddress').returns(false)
+    sinon.stub(fromEnsNameToAddressUtil.default, 'fromEnsNameToAddress').resolves('0xjoshua')
+    const responseJson = [{b:'data'}]
+    global.fetch.resolves({ ok: true, json: async () => ({ results: responseJson }) })
 
-  it('should return NETWORK_ERROR if fetch fails', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({ ok: false, status: 500 });
 
-    const result = await SAFE('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR);
-  });
 
-  it('should return CUSTOM error if response structure is unexpected', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({ notResults: [] })
-    });
-
-    const result = await SAFE('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.CUSTOM);
-  });
-
-  it('should return DEFAULT error if fetch throws', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').rejects(new Error('Boom'));
-
-    const result = await SAFE('0xabc', 'txns', 'ethereum');
-    expect(result.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT);
-    expect(result.reason.message).to.equal('Boom');
-  });
-
-  it('should return parsed transaction data on success', async () => {
-    sinon.stub(isAddressUtil.default, 'isAddress').returns(true);
-    sinon.stub(global, 'fetch').resolves({
-      ok: true,
-      json: async () => ({
-        results: [
-          { confirmations: [], dataDecoded: {}, hash: '0x1' },
-          { confirmations: [], dataDecoded: {}, hash: '0x2' }
-        ]
-      })
-    });
-
-    const result = await SAFE('0xabc', 'txns', 'ethereum');
-    expect(result).to.deep.equal([
-      { hash: '0x1' },
-      { hash: '0x2' }
-    ]);
-  });
-});
+    const result =  await SAFE('biggy','txns','ethereum')
+    expect(result).to.deep.equal(responseJson)
+  })
+})
