@@ -1,5 +1,6 @@
 import { fromTimeStampToBlock } from './from-timestamp-to-block'
 import { CHAIN_ID_MAP, ERROR_MESSAGES_FLAG, MAX_PAGE_LIMIT } from './constants'
+import { getUrlAndHeaders } from './proxy-url-verify'
 import { SERVICE_API_KEY } from '../crypto-constants'
 import { toTimestamp } from './toTimestamp'
 import { isAddress } from './is-address'
@@ -64,7 +65,11 @@ export async function handleScanRequest({
   }
 
   try {
-    const res = await fetch(url)
+      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url, apiKeyName: SERVICE_API_KEY.Etherscan, serviceName: 'etherscan', headers: {}});
+    const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!res.ok) throw new Error(`HTTP error: ${res.status}`)
     const json = await res.json()
 

@@ -7,6 +7,7 @@ import {
   ERROR_MESSAGES_FLAG,
   MAX_PAGE_LIMIT
 } from './utils/constants'
+import { getUrlAndHeaders } from './utils/proxy-url-verify'
 import { handleScanRequest } from './utils/handle-explorer-request'
 import { toTimestamp } from './utils/toTimestamp'
 import { isAddress } from './utils/is-address'
@@ -54,7 +55,11 @@ export async function FIREFLY() {
   url.searchParams.set('end', String(end))
 
   try {
-    const res = await fetch(url.toString(), { headers })
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url: url.toString(), apiKeyName: SERVICE_API_KEY.Firefly, serviceName: 'firefly', headers});
+    const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
     const json = await res.json()
@@ -109,7 +114,12 @@ export async function LENS() {
   url.searchParams.set('end', String(end))
 
   try {
-    const res = await fetch(url.toString(), { headers })
+        const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url: url.toString(), apiKeyName: SERVICE_API_KEY.Firefly, serviceName: 'firefly', headers});
+
+    const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
     const json = await res.json()
@@ -163,7 +173,12 @@ export async function FARCASTER() {
   url.searchParams.set('end', String(end))
 
   try {
-    const res = await fetch(url.toString(), { headers })
+        const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url: url.toString(), apiKeyName: SERVICE_API_KEY.Firefly, serviceName: 'firefly', headers});
+
+    const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
     const json = await res.json()
@@ -321,12 +336,17 @@ export async function NEYNAR() {
   const url = `https://api.neynar.com/v2/farcaster/followers?fid=${fid}`
 
   try {
-    const response = await fetch(url, {
+        const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url: url.toString(), apiKeyName: SERVICE_API_KEY.Firefly, serviceName: 'firefly', headers: {
       headers: {
         'x-api-key': API_KEY,
         'x-neynar-experimental': 'false'
       }
-    })
+    }});
+
+    const response = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const json = await response.json()
     if (!json?.users?.length) return []
@@ -552,6 +572,7 @@ export async function COINGECKO(category, param1, param2) {
 }
 
 export async function EOA() {
+  console.log('new EOA new modified function from formulajs')
   const API_KEY = window.localStorage.getItem(SERVICE_API_KEY.Etherscan)
   if (!API_KEY) return `${SERVICE_API_KEY.Etherscan}${ERROR_MESSAGES_FLAG.MISSING_KEY}`
   let [addresses, category, chains, startTime, endTime, page = 1, offset = 10] = utils.argsToArray(arguments)
@@ -632,10 +653,13 @@ export async function EOA() {
   }
 
   return out
-
   async function fetchJSON(url) {
     try {
-      const res = await fetch(url)
+      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url, apiKeyName: SERVICE_API_KEY.Etherscan, serviceName: 'etherscan', headers: {}});
+      const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
       if (!res.ok) return `HTTP_${res.status}`
 
       const json = await res.json()
