@@ -75,5 +75,5 @@ export async function handleScanRequest({
         throw new RateLimitError(apiInfo.apiKeyName)
     }
 
-    return json.result
+    return type === 'gas' ? [json.result] : json.result
 }
