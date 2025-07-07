@@ -77,17 +77,17 @@ function removeUrlParams(url, paramsToRemove) {
 export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
     // Check if proxy is enabled in localStorage
     const apiKeyLS = window.localStorage.getItem(SERVICES_API_KEY[serviceName]);
-    if(SERVICES_API_KEY[serviceName] && (!apiKeyLS || apiKeyLS === '')) {
-        throw new MissingApiKeyError(SERVICES_API_KEY[serviceName])
-    }
     const isProxyModeEnabledValue = apiKeyLS === 'DEFAULT_PROXY_MODE';
 
     // Check if proxy URL exists for this service
     const proxyConfig = PROXY_MAP[serviceName];
 
+    if (!proxyConfig && SERVICES_API_KEY[serviceName] && (!apiKeyLS || apiKeyLS === '')) {
+        throw new MissingApiKeyError(SERVICES_API_KEY[serviceName])
+    }
+
     // If proxy mode is enabled AND proxy URL exists for this service
-    if (isProxyModeEnabledValue && proxyConfig && serviceName && SERVICES_API_KEY[serviceName]) {
-        console.log('isProxyModeEnabledValue', isProxyModeEnabledValue)
+    if ((isProxyModeEnabledValue || !apiKeyLS || apiKeyLS === '') && proxyConfig) {
         // Remove specified parameters from the target URL
         const cleanedUrl = removeUrlParams(url, proxyConfig.removeParams);
 

@@ -44,9 +44,6 @@ export async function FIREFLY() {
     })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Firefly)
-    if (!apiKey) {
-      throw new MissingApiKeyError(SERVICES_API_KEY.Firefly)
-    }
 
     const url = new URL('https://openapi.firefly.land/v1/fileverse/fetch')
     url.searchParams
@@ -106,9 +103,6 @@ export async function LENS() {
     const apiKey = window.localStorage.getItem(
       SERVICES_API_KEY.Firefly
     )
-    if (!apiKey) {
-      throw new MissingApiKeyError(SERVICES_API_KEY.Firefly)
-    }
 
     const url = new URL(
       'https://openapi.firefly.land/v1/fileverse/fetch'
@@ -170,9 +164,6 @@ export async function FARCASTER() {
     const apiKey = window.localStorage.getItem(
       SERVICES_API_KEY.Firefly
     )
-    if (!apiKey) {
-      throw new MissingApiKeyError(SERVICES_API_KEY.Firefly)
-    }
 
     const url = new URL(
       'https://openapi.firefly.land/v1/fileverse/fetch'
@@ -311,7 +302,6 @@ export async function BASE() {
     const [type, address, startDate, endDate, page, limit] = utils.argsToArray(arguments)
     validateParams(baseParamsSchema, { type, address, startDate, endDate, page, limit })
     const API_KEY = window.localStorage.getItem(SERVICES_API_KEY.Basescan)
-    if (!API_KEY) throw new MissingApiKeyError(SERVICES_API_KEY.Basescan)
 
     return await handleScanRequest({
       type,
@@ -347,7 +337,6 @@ export async function GNOSIS() {
     const apiKey = window.localStorage.getItem(
       SERVICES_API_KEY.Gnosisscan
     )
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Gnosisscan)
 
     return await handleScanRequest({
       type,
@@ -377,7 +366,6 @@ export async function NEYNAR() {
     validateParams(neynarParamsSchema, { username })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Neynar)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Neynar)
 
     const fid = await fromUsernameToFidUtil.default.fromUsernameToFid(username, apiKey)
     if (!fid) throw new ValidationError(`Invalid username: ${username}`)
@@ -385,7 +373,7 @@ export async function NEYNAR() {
     const url = `https://api.neynar.com/v2/farcaster/followers?fid=${fid}`
 
     const { URL: finalUrl, HEADERS } = getUrlAndHeaders({
-      url: url.toString(), serviceName: 'Firefly',
+      url: url.toString(), serviceName: 'Neynar',
         headers: {
           'x-api-key': apiKey,
           'x-neynar-experimental': 'false'
@@ -490,7 +478,6 @@ export async function ETHERSCAN() {
     if (!chainId) throw new ValidationError(`Invalid chain: ${chain}`)
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan)
 
     return await handleScanRequest({
       type,
@@ -516,7 +503,6 @@ export async function COINGECKO() {
     validateParams(coingeckoParamsSchema, { category, param1, param2 })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Coingecko)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Coingecko)
 
     const headers = {
       accept: 'application/json',
@@ -583,14 +569,12 @@ export async function COINGECKO() {
 }
 
 export async function EOA() {
-  console.log('EOA')
   try {
     const [addresses, category, chains, startTime, endTime, page = 1, offset = 10] =
       utils.argsToArray(arguments)
     validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan)
 
     const INPUTS = addresses.split(',').map(s => s.trim()).filter(Boolean)
     const CHAINS = chains.split(',').map(s => s.trim()).filter(Boolean)
@@ -607,7 +591,6 @@ export async function EOA() {
       }
     }
     const ADDRS = Object.keys(ADDRESS_MAP)
-    console.log('ADDRS', ADDRS)
     const out = []
 
     async function fetchJSON(url) {
@@ -682,7 +665,6 @@ export async function SAFE() {
     validateParams(safeParamsSchema, { address, utility, chain, limit, offset })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Safe)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Safe)
 
     const chainId = SAFE_CHAIN_MAP[chain]
     if (!chainId) throw new ValidationError(`Invalid chain: ${chain}`)
@@ -719,7 +701,6 @@ export async function DEFILLAMA() {
     const [category] = utils.argsToArray(arguments)
     validateParams(defillamaParamsSchema, { category })
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Defillama)
-    if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Defillama)
     const url = CATEGORY_URLS[category]
     if (!url) throw new ValidationError(`Invalid category: ${category}`)
     const res = await fetch(url)
