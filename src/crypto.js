@@ -243,7 +243,7 @@ export async function BLOCKSCOUT() {
       startTimestamp ?? Math.floor((Date.now() - 30 * 24 * 3600 * 1000) / 1000)
     const endTs = endTimestamp
 
-    const resolvedAddress = fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
+    const resolvedAddress = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
 
     const hostname = BLOCKSCOUT_CHAINS_MAP[chain]
 
@@ -575,7 +575,7 @@ export async function EOA() {
       if (isAddressUtil.default.isAddress(inp)) {
         ADDRESS_MAP[inp.toLowerCase()] = null
       } else {
-      const _address = fromEnsNameToAddressUtil.default.validateAndGetAddress(inp)
+      const _address = await fromEnsNameToAddressUtil.default.validateAndGetAddress(inp)
         ADDRESS_MAP[_address.toLowerCase()] = _address
       }
     }
@@ -658,7 +658,7 @@ export async function SAFE() {
 
     
 
-    const resolved = fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
+    const resolved = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
 
 
     const url = `https://api.safe.global/tx-service/${chainId}/api/v2/safes/${resolved}/multisig-transactions?limit=${limit}&offset=${offset}`

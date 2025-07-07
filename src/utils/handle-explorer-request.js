@@ -22,7 +22,7 @@ export async function handleScanRequest({
   }
 
   if (type !== 'gas') {
-    address = fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
+    address = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
   }
 
   const apiInfo = API_INFO_MAP[functionName]
