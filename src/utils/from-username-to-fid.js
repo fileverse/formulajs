@@ -1,10 +1,9 @@
-import { SERVICES_API_KEY } from '../crypto-constants';
-import { getUrlAndHeaders } from './proxy-url-verify';
+import { getUrlAndHeaders } from './proxy-url-map.js';
 const fromUsernameToFid = async (username, apiKey) => {
   if (!username) return null
   const url = `https://api.neynar.com/v2/farcaster/user/search/?q=${username}&limit=5`;
   const { URL: finalUrl, HEADERS } = getUrlAndHeaders({
-    url, apiKeyName: SERVICES_API_KEY.Neynar, serviceName: 'neynar', headers: {
+    url, serviceName: 'Neynar', headers: {
       'x-api-key': apiKey,
       'x-neynar-experimental': 'false'
     }

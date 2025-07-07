@@ -28,7 +28,7 @@ import { safeParamsSchema } from './crypto-function-schema/safe-schema.js'
 import { CATEGORY_URLS, defillamaParamsSchema } from './crypto-function-schema/defillama-schema.js'
 import { uniswapParamsSchema } from './crypto-function-schema/uniswap-schema.js'
 import { aaveParamsSchema } from './crypto-function-schema/aave-schema.js'
-import { getUrlAndHeaders } from './utils/proxy-url-verify'
+import { getUrlAndHeaders } from './utils/proxy-url-map.js'
 
 
 export async function FIREFLY() {
@@ -61,7 +61,7 @@ export async function FIREFLY() {
     url.searchParams.set('start', String(start))
     url.searchParams.set('end', String(end))
 
-    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), apiKeyName: SERVICES_API_KEY.Firefly, serviceName: 'firefly', headers });
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), serviceName: 'Firefly', headers: { 'x-api-key': apiKey } });
     const response = await fetch(finalUrl, {
       method: 'GET',
       headers: HEADERS,
@@ -129,7 +129,7 @@ export async function LENS() {
     url.searchParams.set('start', String(start))
     url.searchParams.set('end', String(end))
 
-    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), apiKeyName: SERVICES_API_KEY.Firefly, serviceName: 'firefly', headers });
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), serviceName: 'Firefly', headers: { 'x-api-key': apiKey } });
 
     const response = await fetch(finalUrl, {
       method: 'GET',
@@ -194,7 +194,7 @@ export async function FARCASTER() {
     url.searchParams.set('start', String(start))
     url.searchParams.set('end', String(end))
 
-    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), apiKeyName: SERVICES_API_KEY.Firefly, serviceName: 'firefly', headers });
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url: url.toString(), serviceName: 'Firefly', headers: { 'x-api-key': apiKey } });
 
     const response = await fetch(finalUrl, {
       method: 'GET',
@@ -385,12 +385,12 @@ export async function NEYNAR() {
     const url = `https://api.neynar.com/v2/farcaster/followers?fid=${fid}`
 
     const { URL: finalUrl, HEADERS } = getUrlAndHeaders({
-      url: url.toString(), apiKeyName: SERVICES_API_KEY.Firefly, serviceName: 'firefly', headers: {
+      url: url.toString(), serviceName: 'Firefly',
         headers: {
-          'x-api-key': API_KEY,
+          'x-api-key': apiKey,
           'x-neynar-experimental': 'false'
         }
-      }
+      
     });
 
     const response = await fetch(finalUrl, {
@@ -582,12 +582,14 @@ export async function COINGECKO() {
 }
 
 export async function EOA() {
+  console.log('EOA')
   try {
     const [addresses, category, chains, startTime, endTime, page = 1, offset = 10] =
       utils.argsToArray(arguments)
     validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
+    console.log('apiKey', apiKey)
     if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan)
 
     const INPUTS = addresses.split(',').map(s => s.trim()).filter(Boolean)
@@ -605,10 +607,12 @@ export async function EOA() {
       }
     }
     const ADDRS = Object.keys(ADDRESS_MAP)
+    console.log('ADDRS', ADDRS)
     const out = []
 
     async function fetchJSON(url) {
-      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, apiKeyName: SERVICES_API_KEY.Etherscan, serviceName: 'etherscan', headers: {} });
+      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, serviceName: 'Etherscan', headers: {} });
+      console.log('finalUrl', finalUrl, HEADERS)
       const res = await fetch(finalUrl, {
         method: 'GET',
         headers: HEADERS,
@@ -625,10 +629,14 @@ export async function EOA() {
 
 
     for (const chain of CHAINS) {
+      console.log('chain', chain)
       const chainId = CHAIN_ID_MAP[chain]
       if (!chainId) throw new ValidationError(`Invalid chain: ${chain}`)
+      console.log('chain', chain)
+
 
       if (category === 'balance') {
+        console.log('balance')
         // chunk 20
         for (let i = 0; i < ADDRS.length; i += 20) {
           const slice = ADDRS.slice(i, i + 20).join(',')
@@ -642,8 +650,10 @@ export async function EOA() {
         }
       } else {
         // txns
+        console.log('startTime', startTime, 'endTime', endTime, chain, apiKey)
         const sb = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(startTime), chain, apiKey)
         const eb = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(endTime), chain, apiKey)
+        console.log('sb', sb, 'eb', eb)
         if (!sb) throw new ValidationError(`Invalid startTime: ${startTime}`)
         if (!eb) throw new ValidationError(`Invalid endTime: ${endTime}`)
         for (const addr of ADDRS) {
@@ -694,8 +704,8 @@ export async function SAFE() {
 
     const url = `https://api.safe.global/tx-service/${chainId}/api/v2/safes/${resolved}/multisig-transactions?limit=${limit}&offset=${offset}`
 
-
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } })
+      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, serviceName: 'Etherscan', headers: { Authorization: `Bearer ${apiKey}` } });
+    const res = await fetch(finalUrl, { headers: HEADERS })
     if (!res.ok) throw new NetworkError(SERVICES_API_KEY.Safe, res.status)
     const json = await res.json()
 
