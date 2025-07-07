@@ -25,7 +25,7 @@ describe('FARCASTER', () => {
   it('should return INVALID_PARAM when end exceeds MAX_PAGE_LIMIT', async () => {
     const result = await FARCASTER('posts', 'xyz', 0, 99999)
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM)
-    expect(result.message).to.match(/Number must be less than or equal to/)
+    expect(result.message).to.match(/"end" must be less than or equal to/)
     expect(result.functionName).to.equal('FARCASTER')
   })
 
