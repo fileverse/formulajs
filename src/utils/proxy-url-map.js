@@ -71,7 +71,6 @@ function removeUrlParams(url, paramsToRemove) {
  * @returns {Object} Object containing URL and HEADERS for the fetch request
  */
 export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
-    console.log('getUrlAndHeaders new modified function from formulajs', url, serviceName)
     // Check if proxy is enabled in localStorage
     const apiKeyLS = window.localStorage.getItem(SERVICES_API_KEY[serviceName]);
     const isProxyModeEnabledValue = apiKeyLS === 'DEFAULT_PROXY_MODE';
@@ -100,8 +99,6 @@ export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
         URL: url,
         HEADERS: {
             ...headers,
-            method: 'GET',
-            'Content-Type': 'application/json'
         }
     };
 }

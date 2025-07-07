@@ -549,8 +549,9 @@ export async function COINGECKO() {
         break
       }
     }
+    const {URL: finalUrl, HEADERS} = getUrlAndHeaders({url, serviceName: 'Coingecko', headers})
 
-    const res = await fetch(url, { headers })
+    const res = await fetch(finalUrl, { headers: HEADERS })
     const json = await res.json()
     if (!res.ok) {
       const msg = json?.status?.error_message || ''
@@ -589,7 +590,6 @@ export async function EOA() {
     validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
-    console.log('apiKey', apiKey)
     if (!apiKey) throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan)
 
     const INPUTS = addresses.split(',').map(s => s.trim()).filter(Boolean)
@@ -612,7 +612,6 @@ export async function EOA() {
 
     async function fetchJSON(url) {
       const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, serviceName: 'Etherscan', headers: {} });
-      console.log('finalUrl', finalUrl, HEADERS)
       const res = await fetch(finalUrl, {
         method: 'GET',
         headers: HEADERS,
@@ -629,14 +628,10 @@ export async function EOA() {
 
 
     for (const chain of CHAINS) {
-      console.log('chain', chain)
       const chainId = CHAIN_ID_MAP[chain]
       if (!chainId) throw new ValidationError(`Invalid chain: ${chain}`)
-      console.log('chain', chain)
-
 
       if (category === 'balance') {
-        console.log('balance')
         // chunk 20
         for (let i = 0; i < ADDRS.length; i += 20) {
           const slice = ADDRS.slice(i, i + 20).join(',')
@@ -650,10 +645,8 @@ export async function EOA() {
         }
       } else {
         // txns
-        console.log('startTime', startTime, 'endTime', endTime, chain, apiKey)
         const sb = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(startTime), chain, apiKey)
         const eb = await fromTimeStampToBlockUtil.default.fromTimeStampToBlock(toTimestamp(endTime), chain, apiKey)
-        console.log('sb', sb, 'eb', eb)
         if (!sb) throw new ValidationError(`Invalid startTime: ${startTime}`)
         if (!eb) throw new ValidationError(`Invalid endTime: ${endTime}`)
         for (const addr of ADDRS) {
