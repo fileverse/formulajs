@@ -75,5 +75,5 @@ export async function handleScanRequest({
         throw new RateLimitError(apiInfo.apiKeyName)
     }
 
-    return type === 'gas' ? [json.result] : json.result
+    return type === 'gas' && !Array.isArray(json.result) ? [json.result] : json.result
 }
