@@ -62,7 +62,7 @@ export async function handleScanRequest({
     }
     url += `&page=${page}&offset=${offset}`
   }
-    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url, serviceName: 'Etherscan', headers: {}});
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url, serviceName: apiInfo.apiKeyName, headers: {}});
     const res = await fetch(finalUrl, {
         method: 'GET',
         headers: HEADERS,

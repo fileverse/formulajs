@@ -1,40 +1,43 @@
 import { SERVICES_API_KEY } from '../crypto-constants.js';
+
+const stagingFileverseProxyUrl = "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy"
+
 // Proxy map configuration
 const PROXY_MAP = {
     Etherscan: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['apikey']
     },
     Basescan: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['apikey']
     },
     Gnosisscan: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['apikey']
     },
     Coingecko: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['apikey']
     },
     Firefly: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['apikey']
     },
     Neynar: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['api_key']
     },
     Safe: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['api_key']
     },
     Defillama: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['api_key']
     },
     GnosisPay: {
-        url: "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy",
+        url: process.env.NEXT_PUBLIC_PROXY_BASE_URL || stagingFileverseProxyUrl,
         removeParams: ['api_key']
     },
     // Add more services as needed. It can be direct url instead of ENV variable
@@ -66,8 +69,8 @@ function removeUrlParams(url, paramsToRemove) {
 /**
  * Handles URL routing through proxy or direct API calls
  * @param {string} url - The original API URL
- * @param {string} serviceName - The name of the service (e.g., 'EOA')
- * @param {string} headers - The name of the service (e.g., 'EOA')
+ * @param {string} serviceName - [OPTIONAL] The name of the service (e.g., 'EOA')
+ * @param {object} headers - [OPTIONAL] The name of the service (e.g., 'EOA')
  * @returns {Object} Object containing URL and HEADERS for the fetch request
  */
 export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
@@ -93,7 +96,6 @@ export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
             }
         };
     }
-
 
     return {
         URL: url,
