@@ -9,7 +9,7 @@ const gasSchema = z.object({
   startDate: dateOrTimestamp.optional(),
   endDate:   dateOrTimestamp.optional(),
   page:      z.number().int().nonnegative().default(1),
-  limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT).default(10),
+  limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"limit" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
 })
 
 const txnSchema = z.object({
@@ -18,7 +18,7 @@ const txnSchema = z.object({
   startDate: dateOrTimestamp.optional(),
   endDate:   dateOrTimestamp.optional(),
   page:      z.number().int().nonnegative().default(1),
-  limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT).default(10),
+  limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"limit" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
 })
 
 export const baseParamsSchema = z.discriminatedUnion('type', [gasSchema, txnSchema])

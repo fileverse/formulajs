@@ -10,5 +10,5 @@ export const blockscoutParamsSchema = z.object({
   startTimestamp: dateOrTimestamp.optional(),
   endTimestamp:  dateOrTimestamp.optional(),
   page:           z.number().int().nonnegative().default(1),
-  offset:         z.number().int().nonnegative().max(MAX_PAGE_LIMIT).default(10),
+  offset:         z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"offset" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
 })

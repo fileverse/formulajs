@@ -115,7 +115,7 @@ describe('BLOCKSCOUT', () => {
     sinon.stub(isAddressModule.default, 'isAddress').returns(true)
     const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ result: [] }) })
 
-    await BLOCKSCOUT('0xabc', 'txns', 'ethereum', '01/01/2023', '12/31/2023')
+    await BLOCKSCOUT('0xabc', 'txns', 'ethereum', '01/01/2023', '31/12/2023')
 
     const url = new URL(fetchStub.firstCall.args[0])
     expect(+url.searchParams.get('start_timestamp')).to.be.a('number')

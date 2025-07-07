@@ -41,13 +41,14 @@ export async function handleScanRequest({
     'all-txns': 'txlist',
     'token-txns': 'tokentx',
     'nft-txns': 'tokennfttx',
-    gas: 'gastracker'
+    'gas': 'gasoracle'
   }
 
   const action = ACTION_MAP[type]
   if (!action) throw new ValidationError(`Invalid type: ${type}`)
 
-  let url = `${baseUrl}?chainid=${chainId}&module=account&action=${action}&apikey=${apiKey}`
+  const module = action === 'gasoracle' ? 'gastracker' : 'account';
+  let url = `${baseUrl}?chainid=${chainId}&module=${module}&action=${action}&apikey=${apiKey}`;
 
   if (['all-txns', 'token-txns', 'nft-txns'].includes(type)) {
     url += `&address=${address}&startblock=0&endblock=99999999&sort=asc`
@@ -80,5 +81,5 @@ export async function handleScanRequest({
         throw new RateLimitError(apiInfo.apiKeyName)
     }
 
-    return json.result
+    return type === 'gas' && !Array.isArray(json.result) ? [json.result] : json.result
 }

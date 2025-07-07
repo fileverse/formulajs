@@ -252,14 +252,14 @@ If "derivatives": exchange name (e.g., "binance_futures", "hyperliquid", "weex-f
       {
         name: 'page',
         detail: "Page number for paginated transaction results. Applies only to 'txns', 'token-txns', and 'nft-txns'.",
-        example: `"1"`,
+        example: `1`,
         require: 'o',
         type: 'number'
       },
       {
         name: 'offset',
         detail: "Number of results per page (limit). Applies only to 'txns', 'token-txns', and 'nft-txns'.",
-        example: `"50"`,
+        example: `50`,
         require: 'o',
         type: 'number'
       }
