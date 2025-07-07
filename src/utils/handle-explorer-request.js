@@ -4,6 +4,8 @@ import * as isAddressUtil from './is-address.js'
 import * as fromEnsNameToAddressUtil from './from-ens-name-to-address.js'
 import { SERVICES_API_KEY } from '../crypto-constants.js'
 import { EnsError, InvalidApiKeyError, NetworkError, RateLimitError, ValidationError } from './error-instances.js'
+import { getUrlAndHeaders } from './proxy-url-map.js'
+
 export async function handleScanRequest({
   type,
   address,
@@ -60,7 +62,11 @@ export async function handleScanRequest({
     }
     url += `&page=${page}&offset=${offset}`
   }
-    const res = await fetch(url)
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({url, serviceName: 'Etherscan', headers: {}});
+    const res = await fetch(finalUrl, {
+        method: 'GET',
+        headers: HEADERS,
+      })
     if (!res.ok) {
       throw new NetworkError(apiInfo.apiKeyName, res.status)
     }
