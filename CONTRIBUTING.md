@@ -101,8 +101,6 @@ Our crypto formulas use a unified errorMessageHandler to catch and standardize a
 
 - `INVALID_API_KEY`: Thrown when the API returns an "Invalid API Key" message.
 
-- `ENS`: Thrown when an ENS name cannot be resolved to an address.
-
 - `DEFAULT`: A fallback for unexpected errors; includes a reason field.
 
  #### How to Throw Errors
