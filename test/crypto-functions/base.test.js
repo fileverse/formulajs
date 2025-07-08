@@ -58,7 +58,6 @@ describe('BASE', () => {
 
 
     const result = await BASE('all-txns', 'vitalik.eth');
-    console.log({result})
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_PARAM);
     expect(result.functionName).to.equal('BASE');
   });
