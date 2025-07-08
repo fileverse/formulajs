@@ -77,7 +77,7 @@ describe('BASE', () => {
 
   it('should return NETWORK_ERROR when fetch response status != 2xx', async () => {
     window.localStorage.getItem.returns('key')
-    sinon.stub(isAddressModule.default, 'isAddress').returns(true)
+    sinon.stub(fromEnsNameToAddress.default, 'validateAndGetAddress').resolves('0xjoshua')
     global.fetch.resolves({ ok: false, status: 502 })
 
     const result = await BASE('all-txns', '0xabc', '01/01/2023', '01/02/2023', 1, 10)

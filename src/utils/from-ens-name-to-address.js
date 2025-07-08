@@ -36,7 +36,7 @@ async function fromEnsNameToAddress(name) {
   }
 }
 const validateAndGetAddress = async (address) => {
-if(isAddressUtil.default(address)) return address
+if(isAddressUtil.default.isAddress(address)) return address
 
 const resolvedAddress = await fromEnsNameToAddress(address)
 if(resolvedAddress) return resolvedAddress
