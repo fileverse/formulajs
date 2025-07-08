@@ -1,44 +1,43 @@
 import { SERVICES_API_KEY } from '../crypto-constants.js';
 import { MissingApiKeyError } from './error-instances.js'
 
-const stagingFileverseProxyUrl = "https://staging-api-proxy-ca4268d7d581.herokuapp.com/proxy";
-const productionFileverseProxyUrl = `${process.env.NEXT_PUBLIC_PROXY_BASE_URL}/proxy`
+const fileverseProxyUrl = `${process.env.NEXT_PUBLIC_PROXY_BASE_URL}/proxy`
 // Proxy map configuration
 const PROXY_MAP = {
     Etherscan: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['apikey']
     },
     Basescan: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['apikey']
     },
     Gnosisscan: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['apikey']
     },
     Coingecko: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['apikey']
     },
     Firefly: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['apikey']
     },
     Neynar: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['api_key']
     },
     Safe: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['api_key']
     },
     Defillama: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['api_key']
     },
     GnosisPay: {
-        url: productionFileverseProxyUrl || stagingFileverseProxyUrl,
+        url: fileverseProxyUrl,
         removeParams: ['api_key']
     },
     // Add more services as needed. It can be direct url instead of ENV variable
