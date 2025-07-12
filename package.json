@@ -57,7 +57,7 @@
     "test:coverage": "c8 mocha --recursive",
     "test:watch": "mocha --recursive --watch --parallel --reporter min",
     "types": "tsc",
-    "test:crypto": "npx mocha 'test/crypto-functions/**/*.js' --recursive",
+    "test:crypto": "npx mocha 'src/crypto/**/*.test.js' --recursive",
     "prepare": "husky install"
   },
   "dependencies": {
