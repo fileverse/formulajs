@@ -1,8 +1,7 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import * as crypto from '../../crypto.js'
-const { UNISWAP } = crypto
-import { ERROR_MESSAGES_FLAG } from '../../utils/constants.js'
+import { UNISWAP } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 
 describe('UNISWAP', () => {
   beforeEach(() => {

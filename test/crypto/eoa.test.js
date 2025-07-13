@@ -1,13 +1,12 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import * as crypto from '../../crypto.js'
+import * as crypto from '../../src/crypto.js'
 const { EOA } = crypto
-import { ERROR_MESSAGES_FLAG, SERVICES_API_KEY } from '../../utils/constants.js'
-import * as isAddressModule from '../../utils/is-address.js'
-import * as fromEnsNameUtil from '../../utils/from-ens-name-to-address.js'
-
-import * as fromTimeStampToBlockUtil from '../../utils/from-timestamp-to-block.js';
-import { ValidationError } from '../../utils/error-instances.js'
+import { ERROR_MESSAGES_FLAG, SERVICES_API_KEY } from '../../src/utils/constants.js'
+import * as isAddressModule from '../../src/utils/is-address.js'
+import * as fromEnsNameUtil from '../../src/utils/from-ens-name-to-address.js'
+import * as fromTimeStampToBlockUtil from '../../src/utils/from-timestamp-to-block.js';
+import { ValidationError } from '../../src/utils/error-instances.js'
 
 
 describe('EOA', () => {

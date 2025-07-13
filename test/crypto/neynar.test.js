@@ -1,10 +1,9 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import sinon from 'sinon'
-import * as crypto from '../../crypto.js'
-const { NEYNAR } = crypto
-import { ERROR_MESSAGES_FLAG } from '../../utils/constants.js'
-import * as fromUsernameToFidUtil from '../../utils/from-username-to-fid.js'
+import { NEYNAR } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import * as fromUsernameToFidUtil from '../../src/utils/from-username-to-fid.js'
 
 describe('NEYNAR', () => {
   beforeEach(() => {

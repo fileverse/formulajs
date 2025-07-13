@@ -1,11 +1,11 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { BASE } from '../../crypto.js'
-import { ERROR_MESSAGES_FLAG } from '../../utils/constants.js'
-import * as isAddressModule from '../../utils/is-address.js'
-import * as fromEnsNameToAddress from '../../utils/from-ens-name-to-address.js'
-import { SERVICES_API_KEY } from '../../utils/constants.js'
-import { ValidationError } from '../../utils/error-instances.js'
+import { BASE } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import * as isAddressModule from '../../src/utils/is-address.js'
+import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js'
+import { SERVICES_API_KEY } from '../../src/utils/constants.js'
+import { ValidationError } from '../../src/utils/error-instances.js'
 
 describe('BASE', () => {
   beforeEach(() => {

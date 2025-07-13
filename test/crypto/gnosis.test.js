@@ -2,12 +2,11 @@
 
 import { expect } from 'chai'
 import sinon from 'sinon'
-import * as crypto from '../../crypto.js'
-const { GNOSIS } = crypto
-import { ERROR_MESSAGES_FLAG } from '../../utils/constants.js'
-import * as isAddressModule from '../../utils/is-address.js'
-import * as fromEnsNameToAddress from '../../utils/from-ens-name-to-address.js'
-import { ValidationError } from '../../utils/error-instances.js'
+import { GNOSIS } from '../../src/crypto.js'
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
+import * as isAddressModule from '../../src/utils/is-address.js'
+import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js'
+import { ValidationError } from '../../src/utils/error-instances.js'
 
 describe('GNOSIS', () => {
   beforeEach(() => {

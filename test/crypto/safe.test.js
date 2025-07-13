@@ -1,12 +1,12 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { SAFE } from '../../crypto.js';
-import { ERROR_MESSAGES_FLAG } from '../../utils/constants.js';
-import * as isAddressUtil from '../../utils/is-address.js';
-import * as fromEnsNameToAddressUtil from '../../utils/from-ens-name-to-address.js';
-import { SERVICES_API_KEY } from '../../utils/constants.js';
-import { ValidationError } from '../../utils/error-instances.js';
+import { SAFE } from '../../src/crypto.js';
+import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
+import * as isAddressUtil from '../../src/utils/is-address.js';
+import * as fromEnsNameToAddressUtil from '../../src/utils/from-ens-name-to-address.js';
+import { SERVICES_API_KEY } from '../../src/utils/constants.js';
+import { ValidationError } from '../../src/utils/error-instances.js';
 
 
 describe('SAFE', () => {
