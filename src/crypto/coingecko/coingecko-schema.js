@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const allowedValues = ['1h', '24h', '7d'];
+const allowedValues = ['1h', '24h', '7d', '14d', '30d', '200d', '1y'];
 const param2Schema = z
   .string()
   .refine((val) => {
@@ -9,7 +9,7 @@ const param2Schema = z
       allowedValues.some((allowed) => token.includes(allowed))
     );
   }, {
-    message: "param2 must contain at least one of: '1h', '24h', '7d'",
+    message: "param2 must contain at least one of: '1h', '24h', '7d', '14d', '30d', '200d', '1y'",
   }).optional()
 const priceSchema = z.object({
   category: z.literal('price'),
