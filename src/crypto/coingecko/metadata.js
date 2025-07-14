@@ -23,7 +23,7 @@ export const COINGECKO_metadata = {
     },
     {
       name: 'param2',
-      detail: `If "market" and "stablecoins" then eg. "1h", "24h", "7d".`,
+      detail: `If "market" and "stablecoins" then eg. "1h", "24h", "7d", "14d", "30d", "200d", "1y".`,
       example: `"1h,24h,7d"`,
       require: 'o'
     }
