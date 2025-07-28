@@ -18,7 +18,8 @@ export function SMARTCONTRACT(){
             return {
                 contractName,
                 functionName,
-                args
+                args,
+                responseType: 'smart-contract'
             }
     } catch (error) {
         return errorMessageHandler(error, 'SMARTCONTRACT')
