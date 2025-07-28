@@ -10,7 +10,8 @@ describe('SMARTCONTRACT', () => {
         expect(result).to.deep.equal({
             contractName: 'MyContract',
             functionName: 'myFunc',
-            args: [1, 2, 3, 4]
+            args: [1, 2, 3, 4],
+            responseType: 'smart-contract'
         })
     })
     it('should throw error when contractName or functionName is invalid', () => {
