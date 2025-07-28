@@ -6,20 +6,21 @@ import { smartContractSchema } from './smart-contract.schema.js'
 
 export function SMARTCONTRACT(){
     try {
-            const [contractName, functionName, ...args] = utils.argsToArray(arguments)
+    const [contractName, functionName, ...args] = utils.argsToArray(arguments)
 
-            validateParams(smartContractSchema, [
-                contractName,
-                functionName,
-                ...args
-            ])
-        
+    validateParams(smartContractSchema, [
+        contractName,
+        functionName,
+        ...args
+    ])
 
-            return {
-                contractName,
-                functionName,
-                args
-            }
+
+    return {
+        contractName,
+        functionName,
+        args,
+        responseType: 'smart-contract'
+    }
     } catch (error) {
         return errorMessageHandler(error, 'SMARTCONTRACT')
     }
