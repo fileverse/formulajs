@@ -1,27 +1,15 @@
 import * as utils from '../../utils/common.js'
-import { errorMessageHandler, validateParams } from "../../utils/error-messages-handler.js"
-import { smartContractSchema } from './smart-contract.schema.js'
+import { errorMessageHandler } from '../../utils/error-messages-handler.js'
 
+export function SMARTCONTRACT() {
+  try {
+    const args = utils.argsToArray(arguments)
 
-
-export function SMARTCONTRACT(){
-    try {
-            const [contractName, functionName, ...args] = utils.argsToArray(arguments)
-
-            validateParams(smartContractSchema, [
-                contractName,
-                functionName,
-                ...args
-            ])
-        
-
-            return {
-                contractName,
-                functionName,
-                args,
-                responseType: 'smart-contract'
-            }
-    } catch (error) {
-        return errorMessageHandler(error, 'SMARTCONTRACT')
+    return {
+      callSignature: args,
+      responseType: 'smart-contract'
     }
+  } catch (error) {
+    return errorMessageHandler(error, 'SMARTCONTRACT')
+  }
 }
