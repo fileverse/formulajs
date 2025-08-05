@@ -1,4 +1,4 @@
-import { MissingApiKeyError, NetworkError, ValidationError } from "../../utils/error-instances.js";
+import { NetworkError, ValidationError } from "../../utils/error-instances.js";
 import { errorMessageHandler } from "../../utils/error-messages-handler.js"
 
 export function isExpired(createdAt) {
