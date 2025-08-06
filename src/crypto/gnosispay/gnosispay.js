@@ -1,22 +1,20 @@
 import { NetworkError, ValidationError } from "../../utils/error-instances.js";
 import { errorMessageHandler } from "../../utils/error-messages-handler.js"
+import { isJwtExpired } from 'jwt-check-expiration'; 
 
-export function isExpired(createdAt) {
-  if(!createdAt)return true
-  const expiryTs = createdAt + 60 * 60 * 1000;
-  return Date.now() > expiryTs;
+export function isExpired(access) {
+  return isJwtExpired(access)
 }
 
 export async function GNOSISPAY() {
 
   try {
-    const GNOSIS_PAY_ACCESS = window.localStorage.getItem('GNOSIS_PAY_ACCESS');
+    const access = window.localStorage.getItem('GNOSIS_PAY_ACCESS');
 
-    if(!GNOSIS_PAY_ACCESS){
+    if(!access){
         throw new ValidationError('Gnosispay access is required. Grant access to query your account')
     }
-    const access = JSON.parse(GNOSIS_PAY_ACCESS)
-    if(!access?.token || isExpired(access?.createdAt)){
+    if(!access || isExpired(access)){
       throw new ValidationError('Expired or invalid access token')
     }
 

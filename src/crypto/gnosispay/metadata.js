@@ -4,7 +4,7 @@ export const GNOSISPAY_metadata = {
     BRAND_SECONDARY_COLOR: '#84968f',
     n: 'GNOSISPAY',
     t: 20,
-    d: 'Get any data from your Gnosis Pay account.',
-    a: 'Get any data from your Gnosis Pay account',
+    d: 'Access transactions, balances, and more from your Gnosis Pay account.',
+    a: 'Access transactions, balances, and more from your Gnosis Pay account.',
     p: []
   }
