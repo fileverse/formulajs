@@ -14,6 +14,7 @@ import { FARCASTER_metadata } from './farcaster/metadata.js'
 import { FIREFLY_metadata } from './firefly/metadata.js'
 import { Neynar_metadata } from './neynar/metadata.js'
 import {SMARTCONTRACT_metadata} from './smart-contract/metadata.js'
+import { GNOSISPAY_metadata } from './gnosispay/metadata.js'
 
 export const FUNCTION_LOCALE = [
   EOA_metadata,
@@ -32,6 +33,7 @@ export const FUNCTION_LOCALE = [
   FIREFLY_metadata,
   Neynar_metadata,
   SMARTCONTRACT_metadata,
+  GNOSISPAY_metadata,
   {
     LOGO: 'https://raw.githubusercontent.com/mritunjayz/github-storage/refs/heads/main/ploymarket.png',
     n: 'POLYMARKET',
