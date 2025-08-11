@@ -13,7 +13,8 @@ export { NEYNAR } from './neynar/neynar.js'
 export { SAFE } from './safe/safe.js'
 export { UNISWAP } from './uniswap/uniswap.js'
 export {SMARTCONTRACT}from './smart-contract/smart-contract.js'
-export {GNOSISPAY} from './gnosispay/gnosispay.js'
+export { TALLY }  from './tally/tally.js'
+// export {GNOSISPAY} from './gnosispay/gnosispay.js'
 
 
 
@@ -43,10 +44,6 @@ export function MEERKAT() {
 }
 
 export function ARTEMIS() {
-  return 'Coming Soon'
-}
-
-export function TALLY() {
   return 'Coming Soon'
 }
 
