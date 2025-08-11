@@ -9,14 +9,14 @@ export const TALLY_metadata = {
   p: [
     {
       name: 'query',
-      detail: "The type of Tally query you want to execute (e.g organisation).",
+      detail: "The type of Tally query you want to execute. We currently support only organisation.",
       example: `"organisation"`,
       require: 'm',
       type: 'string'
     },
     {
       name: 'input1',
-      detail: "Query input (e.g organisation slug)",
+      detail: "Query input. We currently support only organisation slug",
       example: `"arbitrum"`,
       require: 'm',
       type: 'string'
