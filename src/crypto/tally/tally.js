@@ -21,9 +21,6 @@ export async function TALLY() {
     }
 
     const data = await res.json()
-    if(data?.organization){
-      return [data.organization]
-    } 
     return data
   } catch (err) {
     return errorMessageHandler(err, 'TALLY')
