@@ -13,8 +13,9 @@ import { LENS_metadata } from './lens/metadata.js'
 import { FARCASTER_metadata } from './farcaster/metadata.js'
 import { FIREFLY_metadata } from './firefly/metadata.js'
 import { Neynar_metadata } from './neynar/metadata.js'
-import {SMARTCONTRACT_metadata} from './smart-contract/metadata.js'
-import { GNOSISPAY_metadata } from './gnosispay/metadata.js'
+import { SMARTCONTRACT_metadata } from './smart-contract/metadata.js'
+import { TALLY_metadata } from './tally/metadata.js'
+// import { GNOSISPAY_metadata } from './gnosispay/metadata.js'
 
 export const FUNCTION_LOCALE = [
   EOA_metadata,
@@ -33,7 +34,8 @@ export const FUNCTION_LOCALE = [
   FIREFLY_metadata,
   Neynar_metadata,
   SMARTCONTRACT_metadata,
-  GNOSISPAY_metadata,
+  TALLY_metadata,
+  // GNOSISPAY_metadata,
   {
     LOGO: 'https://raw.githubusercontent.com/mritunjayz/github-storage/refs/heads/main/ploymarket.png',
     n: 'POLYMARKET',
@@ -72,14 +74,6 @@ export const FUNCTION_LOCALE = [
     t: 20,
     d: 'Query onchain financial metrics, developer activity, and market insights across protocols and sectors. (Comming soon)',
     a: 'Query onchain financial metrics, developer activity, and market insights across protocols and sectors. (Comming soon)',
-    p: []
-  },
-  {
-    LOGO: 'https://www.tally.xyz/favicon.ico',
-    n: 'TALLY',
-    t: 20,
-    d: 'Track token launches, governance participation, staking activity, and contract usage. (Comming soon)',
-    a: 'Track token launches, governance participation, staking activity, and contract usage. (Comming soon)',
     p: []
   },
   {
