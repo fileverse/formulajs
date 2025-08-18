@@ -9,7 +9,7 @@ export const TALLY_metadata = {
   p: [
     {
       name: 'query',
-      detail: "The type of Tally query you want to execute. We currently support only organization and proposal.",
+      detail: "The type of Tally query you want to execute. We currently support only organization and proposals.",
       example: `"organization"`,
       require: 'm',
       type: 'string'
