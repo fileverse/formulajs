@@ -7,46 +7,49 @@ function initializeProxyMap() {
     if (!PROXY_MAP) {
         const fileverseProxyUrl = `${window.NEXT_PUBLIC_PROXY_BASE_URL}/proxy`;
         
-        PROXY_MAP = {
-    Etherscan: {
-        url: fileverseProxyUrl,
-        removeParams: ['apikey']
-    },
-    Basescan: {
-        url: fileverseProxyUrl,
-        removeParams: ['apikey']
-    },
-    Gnosisscan: {
-        url: fileverseProxyUrl,
-        removeParams: ['apikey']
-    },
-    Coingecko: {
-        url: fileverseProxyUrl,
-        removeParams: ['apikey']
-    },
-    Firefly: {
-        url: fileverseProxyUrl,
-        removeParams: ['apikey']
-    },
-    Neynar: {
-        url: fileverseProxyUrl,
-        removeParams: ['api_key']
-    },
-    Safe: {
-        url: fileverseProxyUrl,
-        removeParams: ['api_key']
-    },
-    Defillama: {
-        url: fileverseProxyUrl,
-        removeParams: ['api_key']
-    },
-    GnosisPay: {
-        url: fileverseProxyUrl,
-        removeParams: ['api_key']
-    },
-    // Add more services as needed. It can be direct url instead of ENV variable
-    // ANOTHER_SERVICE: "https://another-proxy-url.com"
-}
+    PROXY_MAP = {
+        DuneSim: {  
+            url: fileverseProxyUrl,
+        },
+        Etherscan: {
+            url: fileverseProxyUrl,
+            removeParams: ['apikey']
+        },
+        Basescan: {
+            url: fileverseProxyUrl,
+            removeParams: ['apikey']
+        },
+        Gnosisscan: {
+            url: fileverseProxyUrl,
+            removeParams: ['apikey']
+        },
+        Coingecko: {
+            url: fileverseProxyUrl,
+            removeParams: ['apikey']
+        },
+        Firefly: {
+            url: fileverseProxyUrl,
+            removeParams: ['apikey']
+        },
+        Neynar: {
+            url: fileverseProxyUrl,
+            removeParams: ['api_key']
+        },
+        Safe: {
+            url: fileverseProxyUrl,
+            removeParams: ['api_key']
+        },
+        Defillama: {
+            url: fileverseProxyUrl,
+            removeParams: ['api_key']
+        },
+        GnosisPay: {
+            url: fileverseProxyUrl,
+            removeParams: ['api_key']
+        },
+        // Add more services as needed. It can be direct url instead of ENV variable
+        // ANOTHER_SERVICE: "https://another-proxy-url.com"
+    }
     }
     return PROXY_MAP;
 }
