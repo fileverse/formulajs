@@ -42,5 +42,6 @@ export const SERVICES_API_KEY = {
   Firefly: 'Firefly',
   GnosisPay: 'GnosisPay',
   Neynar: 'Neynar',
-  Defillama: 'Defillama'
+  Defillama: 'Defillama',
+  DuneSim: 'DuneSim',
 }

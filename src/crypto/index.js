@@ -12,8 +12,9 @@ export { LENS } from './lens/lens.js'
 export { NEYNAR } from './neynar/neynar.js'
 export { SAFE } from './safe/safe.js'
 export { UNISWAP } from './uniswap/uniswap.js'
-export {SMARTCONTRACT}from './smart-contract/smart-contract.js'
+export { SMARTCONTRACT }from './smart-contract/smart-contract.js'
 export { TALLY }  from './tally/tally.js'
+export { DUNESIM } from './dune-sim/dune-sim.js'
 // export {GNOSISPAY} from './gnosispay/gnosispay.js'
 
 
