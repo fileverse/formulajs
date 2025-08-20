@@ -16,7 +16,7 @@ export const TALLY_metadata = {
     },
     {
       name: 'input1',
-      detail: "Query input. We currently support only organisation slug e.g Aave, Arbitrum, Compound, ENS, Nouns, Uniswap etc...",
+      detail: "Query input. We currently support only organisation slug e.g Aave, Arbitrum, Compound, ENS, NounsDAO, Uniswap etc...",
       example: `"arbitrum"`,
       require: 'm',
       type: 'string'
