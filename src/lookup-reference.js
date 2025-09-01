@@ -303,46 +303,72 @@ export function ROWS(array) {
  * @returns
  */
 export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
-  if (!array || !Array.isArray(array)) {
-    return error.na
+  if (!array || !Array.isArray(array)) return error.na;
+  if (array.length === 0) return 0;
+
+  let idx = utils.parseNumber(sort_index);
+  if (!idx || idx < 1) return error.value;
+  idx = idx - 1;
+
+  let order = utils.parseNumber(sort_order);
+  if (order !== 1 && order !== -1) return error.value;
+
+  const byCol = utils.parseBool(by_col);
+  if (typeof byCol !== "boolean") return error.name;
+
+  // Rectangularize then orient
+  const matrix = utils.fillMatrix(array);
+  const working = byCol ? utils.transpose(matrix) : matrix;
+
+  if (!working.length || !working[0] || idx >= working[0].length) {
+    return error.value; // out of bounds
   }
 
-  if (array.length === 0) {
-    return 0
-  }
+  // Helpers (aiming for spreadsheet-ish behavior)
+  const isBlank = (v) => v === "" || v === null || v === undefined;
 
-  sort_index = utils.parseNumber(sort_index)
-  if (!sort_index || sort_index < 1) {
-    return error.value
-  }
+  const cmp = (a, b) => {
+    // Blanks last (ascending); we'll multiply by order later for descending.
+    const aBlank = isBlank(a);
+    const bBlank = isBlank(b);
+    if (aBlank && bBlank) return 0;
+    if (aBlank) return 1;
+    if (bBlank) return -1;
 
-  sort_order = utils.parseNumber(sort_order)
-  if (sort_order !== 1 && sort_order !== -1) {
-    return error.value
-  }
+    // If both parse as finite numbers, compare numerically
+    const na = utils.parseNumber(a);
+    const nb = utils.parseNumber(b);
+    const aNum = Number.isFinite(na);
+    const bNum = Number.isFinite(nb);
 
-  by_col = utils.parseBool(by_col)
-  if (typeof by_col !== 'boolean') {
-    return error.name
-  }
+    if (aNum && bNum) {
+      if (na < nb) return -1;
+      if (na > nb) return 1;
+      return 0;
+    }
 
-  const sortArray = (arr) =>
-    arr.sort((a, b) => {
-      a = utils.parseString(a[sort_index - 1])
-      b = utils.parseString(b[sort_index - 1])
+    // Fallback: case-insensitive string compare
+    const sa = (utils.parseString(a) ?? "").toString().toLowerCase();
+    const sb = (utils.parseString(b) ?? "").toString().toLowerCase();
+    if (sa < sb) return -1;
+    if (sa > sb) return 1;
+    return 0;
+  };
 
-      return sort_order === 1 ? (a < b ? sort_order * -1 : sort_order) : a > b ? sort_order : sort_order * -1
-    })
+  // Stable sort: decorate with original index
+  const decorated = working.map((row, i) => ({ row, i }));
 
-  const matrix = utils.fillMatrix(array)
-  const result = by_col ? utils.transpose(matrix) : matrix
+  decorated.sort((A, B) => {
+    const base = cmp(A.row[idx], B.row[idx]);
+    if (base !== 0) return base * order;
+    // stable tiebreaker: original order
+    return A.i - B.i;
+  });
 
-  return sort_index >= 1 && sort_index <= result[0].length
-    ? by_col
-      ? utils.transpose(sortArray(result))
-      : sortArray(result)
-    : error.value
+  const sorted = decorated.map((d) => d.row);
+  return byCol ? utils.transpose(sorted) : sorted;
 }
+
 
 /**
  * Returns the transpose of an array.
