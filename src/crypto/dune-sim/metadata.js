@@ -5,7 +5,7 @@ export const DUNESIM_metadata = {
   LOGO: 'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://docs.sim.dune.com&size=32',
   BRAND_COLOR: '#fef7f5',
   BRAND_SECONDARY_COLOR: '#f9ab99',
-  n: 'DUNESIM',
+  n: 'DUNE',
   t: 20,
   d: 'Query Sim APIs for blockchain activity, token prices, and token-holder data.',
   a: 'Query Sim APIs for blockchain activity, token prices, and token-holder data.',

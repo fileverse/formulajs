@@ -106,7 +106,9 @@ export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
             HEADERS: {
                 'target-url': cleanedUrl,
                 method: 'GET',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "Cache-Control": "no-store",
+                Pragma: "no-cache",
             }
         };
     }
@@ -114,6 +116,8 @@ export function getUrlAndHeaders({ url, serviceName, headers = {} }) {
     return {
         URL: url,
         HEADERS: {
+            "Cache-Control": "no-store",
+            Pragma: "no-cache",
             ...headers,
         }
     };

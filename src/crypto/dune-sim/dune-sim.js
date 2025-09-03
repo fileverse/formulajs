@@ -60,7 +60,7 @@ export async function getChainName(chainId){
 
 
 
-export async function DUNESIM() {
+export async function DUNE() {
   try {
     const [type, input1, input2, input3, input4] = utils.argsToArray(arguments);
 
@@ -181,6 +181,6 @@ export async function DUNESIM() {
     }
     return final
   } catch (err) {
-    return errorMessageHandler(err, "DUNESIM");
+    return errorMessageHandler(err, "DUNE");
   }
 }
