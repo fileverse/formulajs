@@ -128,6 +128,9 @@ export async function DUNE() {
         if(item?.total_supply){
           item.total_supply = formatNumber(item?.total_supply, item.decimals)
         }
+        if(item?.fully_diluted_value){
+          item.fully_diluted_value = formatNumber(item?.fully_diluted_value, item.decimals)
+        }
       }
       if(item?.first_acquired){
         item.first_acquired = new Intl.DateTimeFormat("en-US", {

@@ -50,7 +50,7 @@ export async function COINGECKO() {
     }
     const {URL: finalUrl, HEADERS} = getUrlAndHeaders({url, serviceName: 'Coingecko', headers})
 
-    const res = await fetch(finalUrl, { headers: HEADERS })
+    const res = await fetch(finalUrl + "?refresh=true", { headers: HEADERS })
     const json = await res.json()
     if (!res.ok) {
       const msg = json?.status?.error_message || ''
