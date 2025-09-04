@@ -62,7 +62,7 @@ export async function COINGECKO() {
       const out = {}
       for (const [token, prices] of Object.entries(json))
         for (const [cur, val] of Object.entries(prices))
-          out[`${token.charAt(0).toUpperCase() + token.slice(1)}_${cur.toUpperCase()}`] = val
+          out[`${token.toUpperCase()}_${cur.toUpperCase()}`] = val
       return [out]
     }
 

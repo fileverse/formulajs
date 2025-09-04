@@ -4,7 +4,7 @@ import { SERVICES_API_KEY } from '../../utils/constants.js'
 import * as utils from '../../utils/common.js'
 import { errorMessageHandler, validateParams } from '../../utils/error-messages-handler.js'
 import { duneSimParamsSchema } from './dune-sim.schema.js'
-import { NetworkError } from '../../utils/error-instances.js'
+import { NetworkError, ValidationError } from '../../utils/error-instances.js'
 import { getUrlAndHeaders } from '../../utils/proxy-url-map.js'
 import { flattenObject } from '../../utils/flatten-object.js'
 import * as fromEnsNameToAddressUtil from '../../utils/from-ens-name-to-address.js'
@@ -109,7 +109,13 @@ export async function DUNE() {
     });
 
     const res = await fetch(finalUrl, { method: "GET", headers: HEADERS });
-    if (!res.ok) throw new NetworkError(SERVICES_API_KEY.DuneSim, res.status);
+    if (!res.ok) {
+      if(res.status === 400){
+        const data = await res.json()
+        throw new ValidationError(data.message)
+      }
+      throw new NetworkError(SERVICES_API_KEY.DuneSim, res.status);
+    }
 
     const json = await res.json();
     const data =
