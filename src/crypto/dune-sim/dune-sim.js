@@ -28,17 +28,22 @@ const SUPPORTED_TOKEN_NAMES = {
 
 
 function formatNumber(raw, decimals) {
-  if(!decimals){
+  try {
+      if(!decimals){
+        return raw
+      }
+      const quorum = BigInt(raw)
+      const divisor = 10 ** decimals;
+      const normalized = Number(quorum) / divisor;
+    
+      return new Intl.NumberFormat("en-US", {
+        notation: "compact",
+        maximumFractionDigits: 2,
+      }).format(normalized);
+  } catch (error) {
+    console.log({error})
     return raw
   }
-  const quorum = BigInt(raw)
-  const divisor = 10 ** decimals;
-  const normalized = Number(quorum) / divisor;
-
-  return new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(normalized);
 }
 
 let cachedChains = null;
