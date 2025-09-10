@@ -302,47 +302,78 @@ export function ROWS(array) {
  * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
  * @returns
  */
-export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
-  if (!array || !Array.isArray(array)) {
-    return error.na
+export function SORT(inputArray, sortIndex = 1, isAscending, sortByColumn = false) {
+  if (!inputArray || !Array.isArray(inputArray)) return error.na;
+  if (inputArray.length === 0) return 0;
+
+  let sortColumnIndex = utils.parseNumber(sortIndex);
+  if (!sortColumnIndex || sortColumnIndex < 1) return error.value;
+  sortColumnIndex = sortColumnIndex - 1;
+
+  const sortDirection = isAscending === 'FALSE' ? -1 : 1;
+  const parsedSortDirection = utils.parseNumber(sortDirection);
+  if (parsedSortDirection !== 1 && parsedSortDirection !== -1) return error.value;
+
+
+  const isSortByColumn = utils.parseBool(sortByColumn);
+  if (typeof isSortByColumn !== "boolean") return error.name;
+
+
+  const normalizedMatrix = utils.fillMatrix(inputArray);
+  const orientedMatrix = isSortByColumn
+    ? utils.transpose(normalizedMatrix)
+    : normalizedMatrix;
+
+  if (!orientedMatrix.length || !orientedMatrix[0] || sortColumnIndex >= orientedMatrix[0].length) {
+    return error.value;
   }
 
-  if (array.length === 0) {
-    return 0
-  }
+  const isBlank = (value) => value === "" || value === null || value === undefined;
 
-  sort_index = utils.parseNumber(sort_index)
-  if (!sort_index || sort_index < 1) {
-    return error.value
-  }
+  // Comparator for sorting values
+  const compareValues = (a, b) => {
+    const aBlank = isBlank(a);
+    const bBlank = isBlank(b);
+    if (aBlank && bBlank) return 0;
+    if (aBlank) return 1;
+    if (bBlank) return -1;
 
-  sort_order = utils.parseNumber(sort_order)
-  if (sort_order !== 1 && sort_order !== -1) {
-    return error.value
-  }
+    // Numeric comparison if possible
+    const parsedA = utils.parseNumber(a);
+    const parsedB = utils.parseNumber(b);
+    const isANumber = Number.isFinite(parsedA);
+    const isBNumber = Number.isFinite(parsedB);
 
-  by_col = utils.parseBool(by_col)
-  if (typeof by_col !== 'boolean') {
-    return error.name
-  }
+    if (isANumber && isBNumber) {
+      if (parsedA < parsedB) return -1;
+      if (parsedA > parsedB) return 1;
+      return 0;
+    }
 
-  const sortArray = (arr) =>
-    arr.sort((a, b) => {
-      a = utils.parseString(a[sort_index - 1])
-      b = utils.parseString(b[sort_index - 1])
+    // Fallback: case-insensitive string comparison
+    const stringA = (utils.parseString(a) ?? "").toString().toLowerCase();
+    const stringB = (utils.parseString(b) ?? "").toString().toLowerCase();
+    if (stringA < stringB) return -1;
+    if (stringA > stringB) return 1;
+    return 0;
+  };
 
-      return sort_order === 1 ? (a < b ? sort_order * -1 : sort_order) : a > b ? sort_order : sort_order * -1
-    })
+  const rowsWithOriginalIndex = orientedMatrix.map((row, rowIndex) => ({ row, rowIndex }));
 
-  const matrix = utils.fillMatrix(array)
-  const result = by_col ? utils.transpose(matrix) : matrix
+  rowsWithOriginalIndex.sort((rowA, rowB) => {
+    const baseComparison = compareValues(rowA.row[sortColumnIndex], rowB.row[sortColumnIndex]);
+    if (baseComparison !== 0) return baseComparison * parsedSortDirection;
+    return rowA.rowIndex - rowB.rowIndex;
+  });
 
-  return sort_index >= 1 && sort_index <= result[0].length
-    ? by_col
-      ? utils.transpose(sortArray(result))
-      : sortArray(result)
-    : error.value
+  // Extract sorted rows
+  const sortedMatrix = rowsWithOriginalIndex.map((item) => item.row);
+
+  // Return rows or columns depending on orientation
+  return isSortByColumn ? utils.transpose(sortedMatrix) : sortedMatrix;
 }
+
+
 
 /**
  * Returns the transpose of an array.
