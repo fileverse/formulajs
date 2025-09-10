@@ -302,73 +302,77 @@ export function ROWS(array) {
  * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
  * @returns
  */
-export function SORT(array, sort_index = 1, is_ascending, by_col = false) {
-  if (!array || !Array.isArray(array)) return error.na;
-  if (array.length === 0) return 0;
+export function SORT(inputArray, sortIndex = 1, isAscending, sortByColumn = false) {
+  if (!inputArray || !Array.isArray(inputArray)) return error.na;
+  if (inputArray.length === 0) return 0;
 
-  let idx = utils.parseNumber(sort_index);
-  if (!idx || idx < 1) return error.value;
-  idx = idx - 1;
+  let sortColumnIndex = utils.parseNumber(sortIndex);
+  if (!sortColumnIndex || sortColumnIndex < 1) return error.value;
+  sortColumnIndex = sortColumnIndex - 1;
 
-  const sortOrderNumber = is_ascending  === 'FALSE' ?  -1 : 1
-  let order = utils.parseNumber(sortOrderNumber);
-  if (order !== 1 && order !== -1) return error.value;
+  const sortDirection = isAscending === 'FALSE' ? -1 : 1;
+  const parsedSortDirection = utils.parseNumber(sortDirection);
+  if (parsedSortDirection !== 1 && parsedSortDirection !== -1) return error.value;
 
-  const byCol = utils.parseBool(by_col);
-  if (typeof byCol !== "boolean") return error.name;
 
-  // Rectangularize then orient
-  const matrix = utils.fillMatrix(array);
-  const working = byCol ? utils.transpose(matrix) : matrix;
+  const isSortByColumn = utils.parseBool(sortByColumn);
+  if (typeof isSortByColumn !== "boolean") return error.name;
 
-  if (!working.length || !working[0] || idx >= working[0].length) {
-    return error.value; // out of bounds
+
+  const normalizedMatrix = utils.fillMatrix(inputArray);
+  const orientedMatrix = isSortByColumn
+    ? utils.transpose(normalizedMatrix)
+    : normalizedMatrix;
+
+  if (!orientedMatrix.length || !orientedMatrix[0] || sortColumnIndex >= orientedMatrix[0].length) {
+    return error.value;
   }
 
-  // Helpers (aiming for spreadsheet-ish behavior)
-  const isBlank = (v) => v === "" || v === null || v === undefined;
+  const isBlank = (value) => value === "" || value === null || value === undefined;
 
-  const cmp = (a, b) => {
-    // Blanks last (ascending); we'll multiply by order later for descending.
+  // Comparator for sorting values
+  const compareValues = (a, b) => {
     const aBlank = isBlank(a);
     const bBlank = isBlank(b);
     if (aBlank && bBlank) return 0;
     if (aBlank) return 1;
     if (bBlank) return -1;
 
-    // If both parse as finite numbers, compare numerically
-    const na = utils.parseNumber(a);
-    const nb = utils.parseNumber(b);
-    const aNum = Number.isFinite(na);
-    const bNum = Number.isFinite(nb);
+    // Numeric comparison if possible
+    const parsedA = utils.parseNumber(a);
+    const parsedB = utils.parseNumber(b);
+    const isANumber = Number.isFinite(parsedA);
+    const isBNumber = Number.isFinite(parsedB);
 
-    if (aNum && bNum) {
-      if (na < nb) return -1;
-      if (na > nb) return 1;
+    if (isANumber && isBNumber) {
+      if (parsedA < parsedB) return -1;
+      if (parsedA > parsedB) return 1;
       return 0;
     }
 
-    // Fallback: case-insensitive string compare
-    const sa = (utils.parseString(a) ?? "").toString().toLowerCase();
-    const sb = (utils.parseString(b) ?? "").toString().toLowerCase();
-    if (sa < sb) return -1;
-    if (sa > sb) return 1;
+    // Fallback: case-insensitive string comparison
+    const stringA = (utils.parseString(a) ?? "").toString().toLowerCase();
+    const stringB = (utils.parseString(b) ?? "").toString().toLowerCase();
+    if (stringA < stringB) return -1;
+    if (stringA > stringB) return 1;
     return 0;
   };
 
-  // Stable sort: decorate with original index
-  const decorated = working.map((row, i) => ({ row, i }));
+  const rowsWithOriginalIndex = orientedMatrix.map((row, rowIndex) => ({ row, rowIndex }));
 
-  decorated.sort((A, B) => {
-    const base = cmp(A.row[idx], B.row[idx]);
-    if (base !== 0) return base * order;
-    // stable tiebreaker: original order
-    return A.i - B.i;
+  rowsWithOriginalIndex.sort((rowA, rowB) => {
+    const baseComparison = compareValues(rowA.row[sortColumnIndex], rowB.row[sortColumnIndex]);
+    if (baseComparison !== 0) return baseComparison * parsedSortDirection;
+    return rowA.rowIndex - rowB.rowIndex;
   });
 
-  const sorted = decorated.map((d) => d.row);
-  return byCol ? utils.transpose(sorted) : sorted;
+  // Extract sorted rows
+  const sortedMatrix = rowsWithOriginalIndex.map((item) => item.row);
+
+  // Return rows or columns depending on orientation
+  return isSortByColumn ? utils.transpose(sortedMatrix) : sortedMatrix;
 }
+
 
 
 /**
