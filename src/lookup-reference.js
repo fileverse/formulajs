@@ -302,7 +302,7 @@ export function ROWS(array) {
  * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
  * @returns
  */
-export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
+export function SORT(array, sort_index = 1, is_ascending, by_col = false) {
   if (!array || !Array.isArray(array)) return error.na;
   if (array.length === 0) return 0;
 
@@ -310,7 +310,8 @@ export function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
   if (!idx || idx < 1) return error.value;
   idx = idx - 1;
 
-  let order = utils.parseNumber(sort_order);
+  const sortOrderNumber = is_ascending  === 'FALSE' ?  -1 : 1
+  let order = utils.parseNumber(sortOrderNumber);
   if (order !== 1 && order !== -1) return error.value;
 
   const byCol = utils.parseBool(by_col);
