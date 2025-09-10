@@ -50,7 +50,7 @@ export async function COINGECKO() {
     }
     const {URL: finalUrl, HEADERS} = getUrlAndHeaders({url, serviceName: 'Coingecko', headers})
 
-    const res = await fetch(finalUrl, { headers: HEADERS })
+    const res = await fetch(finalUrl + "?refresh=true", { headers: HEADERS })
     const json = await res.json()
     if (!res.ok) {
       const msg = json?.status?.error_message || ''
@@ -62,7 +62,7 @@ export async function COINGECKO() {
       const out = {}
       for (const [token, prices] of Object.entries(json))
         for (const [cur, val] of Object.entries(prices))
-          out[`${token.charAt(0).toUpperCase() + token.slice(1)}_${cur.toUpperCase()}`] = val
+          out[`${token.toUpperCase()}_${cur.toUpperCase()}`] = val
       return [out]
     }
 

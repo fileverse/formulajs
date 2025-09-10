@@ -47,8 +47,8 @@ describe('COINGECKO', () => {
     window.localStorage.getItem.returns('key')
     global.fetch.resolves({ ok:true, json:async()=>({ btc:{usd:10,eur:9},eth:{usd:5} }) })
     const res=await COINGECKO('price','btc','eur')
-    expect(res).to.deep.equal([ { Btc_EUR:9,  Btc_USD: 10,
-      Eth_USD: 5 } ])
+    expect(res).to.deep.equal([ { BTC_EUR:9,  BTC_USD: 10,
+      ETH_USD: 5 } ])
   })
 
   it('should flatten market data array', async()=>{

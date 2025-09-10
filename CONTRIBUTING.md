@@ -44,15 +44,15 @@ export async function ETHERSCAN(address, page, offset) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new NetworkError('ETHERSCAN', res.status);
         }
         const json = await response.json();
         if (json.result.includes("Invalid API Key")) {
-            return `${SERVICE_API_KEY.Etherscan}_MISSING`;
+          throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan);
         }
         return json.result;
     } catch (error) {
-        return "ERROR IN FETCHING";
+        return errorMessageHandler(err, 'ETHERSCAN')
     }
 }
 ```
