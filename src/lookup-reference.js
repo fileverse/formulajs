@@ -310,7 +310,7 @@ export function SORT(inputArray, sortIndex = 1, isAscending, sortByColumn = fals
   if (!sortColumnIndex || sortColumnIndex < 1) return error.value;
   sortColumnIndex = sortColumnIndex - 1;
 
-  const sortDirection = isAscending === 'FALSE' ? -1 : 1;
+  const sortDirection = isAscending?.toLowerCase() === 'false' ? -1 : 1;
   const parsedSortDirection = utils.parseNumber(sortDirection);
   if (parsedSortDirection !== 1 && parsedSortDirection !== -1) return error.value;
 
