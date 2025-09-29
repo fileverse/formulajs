@@ -472,3 +472,367 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup) 
 
   return result
 }
+
+export function XLOOKUP(search_key, lookup_range, result_range, isColV, missing_value,match_mode, search_mode) {
+  let isCol = isColV === "true" ? true : false
+  
+  // Validate required parameters
+  if (search_key === undefined || search_key === null) {
+    return new Error('search_key')
+  }
+  
+  if (!lookup_range) {
+    return new Error('lookup_range')
+  }
+    if (!result_range) {
+    return new Error('result_range')
+  }
+  
+  // Validate and normalize lookup_range (must be singular row or column)
+  let lookup_array = normalizeLookupRange(lookup_range)
+  if (!lookup_array) {
+    return new Error('lookup_range_single')
+  }
+  
+  // Validate and normalize result_range
+  let result_array = normalizeResultRange(result_range)
+  if (!result_array) {
+    return new Error('result_range_invalid')
+  }
+  
+  // Validate that lookup and result ranges have compatible dimensions
+  // Exception: if result_range is a single row, it can be returned regardless of lookup_range length  
+result_array.map((row) => {
+    if (row.length !== lookup_array.length) {
+      return new Error('lookup_range_and_result_range')
+    }
+  })
+  
+  // Set default parameter values Error: Didn't find value in XLOOKUP evaluation
+  missing_value = missing_value !== undefined ? missing_value : new Error("not_found")
+  match_mode = match_mode !== undefined ? match_mode : 0
+  search_mode = search_mode !== undefined ? search_mode : 1
+  isCol = isCol !== undefined ? isCol : false
+  
+  // Validate match_mode
+  if (![0, 1, -1, 2].includes(match_mode)) {
+    return new Error('match_mode_must')
+  }
+  
+  // Validate search_mode
+  if (![1, -1, 2, -2].includes(search_mode)) {
+    return new Error('search_mode_must')
+  }
+  
+  // Validate binary search requirements
+  if (Math.abs(search_mode) === 2 && match_mode === 2) {
+    return new Error('binary_search_and_wildcard')
+  }
+    
+  let res = performLookup(search_key, lookup_array, result_array, missing_value, match_mode, search_mode, isCol);
+  res = isCol ? Array.isArray(res)?res.map((item) => [item.toString()]):res : [res];
+  return res
+}
+
+function normalizeLookupRange(lookup_range) {
+  if (!Array.isArray(lookup_range)) {
+    return null
+  }
+  
+  // If it's a 1D array, it's already a column
+  if (!Array.isArray(lookup_range[0])) {
+    return lookup_range
+  }
+  
+  // If it's a 2D array, check if it's a single row or single column
+  const rows = lookup_range.length
+  const cols = lookup_range[0].length
+  
+  if (rows === 1) {
+    // Single row - extract as array
+    return lookup_range[0]
+  } else if (cols === 1) {
+    // Single column - extract first element of each row
+    return lookup_range.map(row => row[0])
+  } else {
+    // Multiple rows and columns - not allowed
+    return null
+  }
+}
+
+function normalizeResultRange(result_range) {
+  if (!Array.isArray(result_range)) {
+    return null
+  }
+  
+  // If it's a 1D array, convert to 2D single column for consistency
+  if (!Array.isArray(result_range[0])) {
+    return result_range.map(value => [value])
+  }
+  
+  // If it's already 2D, return as is
+  return result_range
+}
+
+function performLookup(search_key, lookup_array, result_array, missing_value, match_mode, search_mode, isCol) {
+    
+  let foundIndex = -1
+  
+  // Handle different match modes
+  switch (match_mode) {
+    case 0: // Exact match
+      foundIndex = findExactMatch(search_key, lookup_array, search_mode)
+      break
+    case 1: // Exact match or next larger
+      foundIndex = findExactOrNextLarger(search_key, lookup_array, search_mode)
+      break
+    case -1: // Exact match or next smaller
+      foundIndex = findExactOrNextSmaller(search_key, lookup_array, search_mode)
+      break
+    case 2: // Wildcard match
+      foundIndex = findWildcardMatch(search_key, lookup_array, search_mode)
+      break
+  }
+  
+  if (foundIndex === -1) {
+        // Return missing_value (single value): "yoo"
+        return missing_value
+  }
+    // Multiple result rows
+    if (isCol) {
+      // Return the foundIndex column from all rows: ["e", "r"]
+      const columnValues = result_array.map(row => row[foundIndex])
+      return columnValues
+    } else {
+      // Return the entire matched row: ["e", 3, "s", "hj"]
+      return result_array[foundIndex]
+    }
+}
+
+function findExactMatch(search_key, lookup_array, search_mode) {
+  const processedSearchKey = typeof search_key === 'string' ? search_key.toLowerCase().trim() : search_key
+  
+  if (Math.abs(search_mode) === 2) {
+    // Binary search
+    return binarySearchExact(processedSearchKey, lookup_array, search_mode > 0)
+  } else {
+    // Linear search
+    const indices = getSearchIndices(lookup_array.length, search_mode)
+    
+    for (const i of indices) {
+      const value = lookup_array[i]
+      const processedValue = typeof value === 'string' ? value.toLowerCase().trim() : value
+      
+      if (processedValue === processedSearchKey) {
+        return i
+      }
+    }
+  }
+  
+  return -1
+}
+
+function findExactOrNextLarger(search_key, lookup_array, search_mode) {
+  const isNumber = typeof search_key === 'number'
+  const processedSearchKey = typeof search_key === 'string' ? search_key.toLowerCase().trim() : search_key
+  
+  if (Math.abs(search_mode) === 2) {
+    // Binary search for exact or next larger
+    return binarySearchNextLarger(processedSearchKey, lookup_array, search_mode > 0)
+  }
+  
+  const indices = getSearchIndices(lookup_array.length, search_mode)
+  let bestIndex = -1
+  
+  for (const i of indices) {
+    const value = lookup_array[i]
+    const processedValue = typeof value === 'string' ? value.toLowerCase().trim() : value
+    
+    // Exact match
+    if (processedValue === processedSearchKey) {
+      return i
+    }
+    
+    // Next larger value
+    if (isNumber && typeof value === 'number' && value > search_key) {
+      if (bestIndex === -1 || value < lookup_array[bestIndex]) {
+        bestIndex = i
+      }
+    } else if (!isNumber && typeof value === 'string' && processedValue > processedSearchKey) {
+      if (bestIndex === -1 || processedValue < (typeof lookup_array[bestIndex] === 'string' ? lookup_array[bestIndex].toLowerCase().trim() : lookup_array[bestIndex])) {
+        bestIndex = i
+      }
+    }
+  }
+  
+  return bestIndex
+}
+
+function findExactOrNextSmaller(search_key, lookup_array, search_mode) {
+  const isNumber = typeof search_key === 'number'
+  const processedSearchKey = typeof search_key === 'string' ? search_key.toLowerCase().trim() : search_key
+  
+  if (Math.abs(search_mode) === 2) {
+    // Binary search for exact or next smaller
+    return binarySearchNextSmaller(processedSearchKey, lookup_array, search_mode > 0)
+  }
+  
+  const indices = getSearchIndices(lookup_array.length, search_mode)
+  let bestIndex = -1
+  
+  for (const i of indices) {
+    const value = lookup_array[i]
+    const processedValue = typeof value === 'string' ? value.toLowerCase().trim() : value
+    
+    // Exact match
+    if (processedValue === processedSearchKey) {
+      return i
+    }
+    
+    // Next smaller value
+    if (isNumber && typeof value === 'number' && value < search_key) {
+      if (bestIndex === -1 || value > lookup_array[bestIndex]) {
+        bestIndex = i
+      }
+    } else if (!isNumber && typeof value === 'string' && processedValue < processedSearchKey) {
+      if (bestIndex === -1 || processedValue > (typeof lookup_array[bestIndex] === 'string' ? lookup_array[bestIndex].toLowerCase().trim() : lookup_array[bestIndex])) {
+        bestIndex = i
+      }
+    }
+  }
+  
+  return bestIndex
+}
+
+function findWildcardMatch(search_key, lookup_array, search_mode) {
+  if (typeof search_key !== 'string') {
+    return -1 // Wildcard only works with strings
+  }
+  
+  // Convert wildcard pattern to regex
+  const pattern = search_key
+    .toLowerCase()
+    .replace(/\*/g, '.*')  // * matches any sequence of characters
+    .replace(/\?/g, '.')   // ? matches any single character
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape other regex chars
+    .replace(/\\\.\*/g, '.*')  // Restore our wildcards
+    .replace(/\\\./g, '.')
+  
+  const regex = new RegExp(`^${pattern}$`, 'i')
+  
+  const indices = getSearchIndices(lookup_array.length, search_mode)
+  
+  for (const i of indices) {
+    const value = lookup_array[i]
+    if (typeof value === 'string' && regex.test(value)) {
+      return i
+    }
+  }
+  
+  return -1
+}
+
+function getSearchIndices(length, search_mode) {
+  if (search_mode === -1) {
+    // Last to first
+    return Array.from({ length }, (_, i) => length - 1 - i)
+  } else {
+    // First to last (default)
+    return Array.from({ length }, (_, i) => i)
+  }
+}
+
+function binarySearchExact(search_key, lookup_array, ascending) {
+  let left = 0
+  let right = lookup_array.length - 1
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const midValue = lookup_array[mid]
+    const processedMidValue = typeof midValue === 'string' ? midValue.toLowerCase().trim() : midValue
+    
+    if (processedMidValue === search_key) {
+      return mid
+    }
+    
+    const comparison = ascending ? 
+      (processedMidValue < search_key) : 
+      (processedMidValue > search_key)
+    
+    if (comparison) {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  
+  return -1
+}
+
+function binarySearchNextLarger(search_key, lookup_array, ascending) {
+  let left = 0
+  let right = lookup_array.length - 1
+  let result = -1
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const midValue = lookup_array[mid]
+    const processedMidValue = typeof midValue === 'string' ? midValue.toLowerCase().trim() : midValue
+    
+    if (processedMidValue === search_key) {
+      return mid // Exact match
+    }
+    
+    if (ascending) {
+      if (processedMidValue > search_key) {
+        result = mid
+        right = mid - 1
+      } else {
+        left = mid + 1
+      }
+    } else {
+      if (processedMidValue < search_key) {
+        result = mid
+        left = mid + 1
+      } else {
+        right = mid - 1
+      }
+    }
+  }
+  
+  return result
+}
+
+function binarySearchNextSmaller(search_key, lookup_array, ascending) {
+  let left = 0
+  let right = lookup_array.length - 1
+  let result = -1
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2)
+    const midValue = lookup_array[mid]
+    const processedMidValue = typeof midValue === 'string' ? midValue.toLowerCase().trim() : midValue
+    
+    if (processedMidValue === search_key) {
+      return mid // Exact match
+    }
+    
+    if (ascending) {
+      if (processedMidValue < search_key) {
+        result = mid
+        left = mid + 1
+      } else {
+        right = mid - 1
+      }
+    } else {
+      if (processedMidValue > search_key) {
+        result = mid
+        right = mid - 1
+      } else {
+        left = mid + 1
+      }
+    }
+  }
+  
+  return result
+}
