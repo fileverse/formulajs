@@ -15,6 +15,8 @@ export { UNISWAP } from './uniswap/uniswap.js'
 export { SMARTCONTRACT }from './smart-contract/smart-contract.js'
 export { TALLY }  from './tally/tally.js'
 export { DUNE } from './dune-sim/dune-sim.js'
+export { PRICE } from './price/price.js'
+export { WALLET } from './wallet/wallet.js'
 // export {GNOSISPAY} from './gnosispay/gnosispay.js'
 
 

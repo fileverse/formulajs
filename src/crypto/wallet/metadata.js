@@ -7,7 +7,7 @@ export const WALLET_metadata = {
         {
             name: 'addresses',
             detail: 'Comma separated addresses / ens',
-            example: '"vitalik.eth", "0xfA0253943c3FF0e43898cba5A7a0dA9D17C27995"',
+            example: '"vitalik.eth, 0xfA0253943c3FF0e43898cba5A7a0dA9D17C27995"',
             require: 'm',
             type: 'string'
         },
@@ -21,7 +21,7 @@ export const WALLET_metadata = {
         {
             name: 'query',
             detail: 'Type of query, can be "txns" or "balance" ',
-            example: '"balance"',
+            example: '"txns"',
             require: 'm',
             type: 'string'
         },

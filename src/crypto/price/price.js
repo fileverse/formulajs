@@ -5,10 +5,16 @@ import * as isAddressUtil from '../../utils/is-address.js'
 import { ValidationError, NetworkError } from '../../utils/error-instances.js'
 
 
+
 export async function PRICE() {
     try {
-        const [input1, input2, input3] = utils.argsToArray(arguments)
+        let [input1, input2, input3] = utils.argsToArray(arguments)
+        input1 = input1?.replace(/\s+/g, "")
+        input2 = input2?.replace(/\s+/g, "")
+        input3 = input3?.replace(/\s+/g, "")
         validateParams(priceSchema, { input1, input2, input3 })
+
+        
 
         // eslint-disable-next-line no-undef
         const baseUrl = window.useLocal ? 'http://localhost:3000' : 'https://onchain-proxy.fileverse.io'
@@ -21,16 +27,16 @@ export async function PRICE() {
 
         if(isAddressUtil.default.isAddress(input1)) {
             const tokenAddress = input1
-            url += `&token=${encodeURIComponent(tokenAddress)}&chain=${encodeURIComponent(input2)}`
+            url += `&token=${tokenAddress}&chain=${input2}`
             if(input3){
-                url += `&time=${encodeURIComponent(input3)}`
+                url += `&time=${input3}`
             }
         } else {
             const coin = input1
-            url += `&coin=${encodeURIComponent(coin)}`
+            url += `&coin=${coin}`
             if (input2) {
-                url += `&time=${encodeURIComponent(input2)}`
-            } else {
+                url += `&time=${input2}`
+            } else if(coin.split(',').length === 1) {
                returnSingleValue = true
             }
         }
@@ -46,9 +52,7 @@ export async function PRICE() {
         }
 
 
-        const json = await res.json()
-
-        const data = json.price
+        const data = await res.json()
 
         if(returnSingleValue){
             return data[0].price

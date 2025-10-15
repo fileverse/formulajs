@@ -16,14 +16,17 @@ const getResolvedAddresses = async (addresses) => {
 
 export async function WALLET() {
     try {
-      const [addresses, chains, query, time] = utils.argsToArray(arguments)
+      let [addresses, chains, query, time] = utils.argsToArray(arguments)
       validateParams(walletParamsSchema, { addresses, chains, query, time })
 
-      const baseUrl = 'http://localhost:3000/third-party'
+      addresses = addresses?.replace(/\s+/g, "")
+      chains = chains?.replace(/\s+/g, "")
+      time = chains?.replace(/\s+/g, "")
+      const baseUrl = 'https://onchain-proxy.fileverse.io'
 
       const resolvedAddresses = await getResolvedAddresses(addresses)
 
-      let url = `${baseUrl}?service=wallet&addresses=${resolvedAddresses}&chains=${chains}&query=${query}`
+      let url = `${baseUrl}/third-party?service=wallet&addresses=${resolvedAddresses}&chains=${chains}&query=${query}`
       if (time) {
           url += `&time=${time}`
       }
@@ -40,10 +43,7 @@ export async function WALLET() {
       }
 
       const json = await res.json()
-      if(query === 'txns'){
-        return json.transactions
-      }
-      return json.balances
+      return json
 
     } catch (error) {
         return errorMessageHandler(error, 'WALLET')
@@ -52,5 +52,5 @@ export async function WALLET() {
 
 
 // WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "ethereum", "balance", "720,1,24").then(console.log)
-// WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, 0xfA0253943c3FF0e43898cba5A7a0dA9D17C27995", "ethereum", "txns", "720").then(console.log)
+// WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, 0x50Aa3435E310d5a2d15a989Bc353ce7f5682E1d4", "ethereum, base", "balance", "720").then(console.log)
 // WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "ethereum", "balance").then(console.log)

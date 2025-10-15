@@ -21,4 +21,11 @@ export const priceSchema = z.object({
       path: ["input2"],
     });
   }
+  if(data.input1?.split(',').length > 1){
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "You can query a single token address at a time.",
+      path: ["input1"],
+    });
+  }
 })
