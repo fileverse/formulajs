@@ -6,11 +6,19 @@ export const priceSchema = z.object({
     input2: z.string().optional(), // chainId / time
     input3: z.string().optional(), // time
 }).superRefine((data, ctx) => {
-    if(isAddress.default.isAddress(data.input1) && !data.input2){
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "chain is required to query token price ",
-        path: ["input2"],
-      });
-    }
+  if(!isAddress.default.isAddress(data.input1))return
+  if(!data.input2){
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Chain is required to query token price ",
+      path: ["input2"],
+    });
+  }
+  if(data.input2?.split(',')?.length){
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Token address can query only one chain ",
+      path: ["input2"],
+    });
+  }
 })
