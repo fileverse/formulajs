@@ -2,17 +2,17 @@ import * as utils from '../../utils/common.js'
 import { errorMessageHandler, validateParams } from '../../utils/error-messages-handler.js'
 import { walletParamsSchema } from './wallet.schema.js'
 import { ValidationError, NetworkError } from '../../utils/error-instances.js'
-// import * as fromEnsNameToAddressUtil from '../../utils/from-ens-name-to-address.js'
+import * as fromEnsNameToAddressUtil from '../../utils/from-ens-name-to-address.js'
 
-// const getResolvedAddresses = async (addresses) => {
-//     const addressesList = addresses.split(',')
-//     const resolvedAddresses = []
-//     for(let address of addressesList){
-//         const data = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address) 
-//         resolvedAddresses.push(data)
-//     }
-//     return resolvedAddresses.join(',')
-// }
+const getResolvedAddresses = async (addresses) => {
+    const addressesList = addresses.split(',')
+    const resolvedAddresses = []
+    for(let address of addressesList){
+        const data = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address) 
+        resolvedAddresses.push(data)
+    }
+    return resolvedAddresses.join(',')
+}
 
 export async function WALLET() {
     try {
@@ -21,9 +21,9 @@ export async function WALLET() {
 
       const baseUrl = 'http://localhost:3000/third-party'
 
-    //   const resolvedAddresses = await getResolvedAddresses(addresses)
+      const resolvedAddresses = await getResolvedAddresses(addresses)
 
-      let url = `${baseUrl}?service=wallet&addresses=${addresses}&chains=${chains}&query=${query}`
+      let url = `${baseUrl}?service=wallet&addresses=${resolvedAddresses}&chains=${chains}&query=${query}`
       if (time) {
           url += `&time=${time}`
       }

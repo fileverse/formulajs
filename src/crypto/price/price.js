@@ -1,8 +1,8 @@
-import * as utils from '../utils/common.js'
-import { errorMessageHandler, validateParams } from '../utils/error-messages-handler.js'
+import * as utils from '../../utils/common.js'
+import { errorMessageHandler, validateParams } from '../../utils/error-messages-handler.js'
 import { priceSchema } from './price.schema.js'
-import * as isAddressUtil from '../utils/is-address.js'
-import { ValidationError, NetworkError } from '../utils/error-instances.js'
+import * as isAddressUtil from '../../utils/is-address.js'
+import { ValidationError, NetworkError } from '../../utils/error-instances.js'
 
 
 export async function PRICE() {

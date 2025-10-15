@@ -16,6 +16,8 @@ import { Neynar_metadata } from './neynar/metadata.js'
 import { SMARTCONTRACT_metadata } from './smart-contract/metadata.js'
 import { TALLY_metadata } from './tally/metadata.js'
 import { DUNESIM_metadata } from './dune-sim/metadata.js'
+import { PRICE_metadata } from './price/metadata.js'
+import { WALLET_metadata }  from './wallet/metadata.js'
 // import { GNOSISPAY_metadata } from './gnosispay/metadata.js'
 
 export const FUNCTION_LOCALE = [
@@ -37,6 +39,8 @@ export const FUNCTION_LOCALE = [
   SMARTCONTRACT_metadata,
   TALLY_metadata,
   DUNESIM_metadata,
+  PRICE_metadata,
+  WALLET_metadata,
   // GNOSISPAY_metadata,
   {
     LOGO: 'https://raw.githubusercontent.com/mritunjayz/github-storage/refs/heads/main/ploymarket.png',
