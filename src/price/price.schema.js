@@ -14,7 +14,7 @@ export const priceSchema = z.object({
       path: ["input2"],
     });
   }
-  if(data.input2?.split(',')?.length){
+  if(data.input2?.split(',')?.length > 1){
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Token address can query only one chain ",

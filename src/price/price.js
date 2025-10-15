@@ -10,10 +10,11 @@ export async function PRICE() {
         const [input1, input2, input3] = utils.argsToArray(arguments)
         validateParams(priceSchema, { input1, input2, input3 })
 
-        const baseUrl = 'http://localhost:3000/third-party'
+        // eslint-disable-next-line no-undef
+        const baseUrl = window.useLocal ? 'http://localhost:3000' : 'https://onchain-proxy.fileverse.io'
 
         let url = `${baseUrl}` +
-            `?service=price`
+            `/third-party?service=price`
 
         let returnSingleValue = false
 
@@ -59,3 +60,10 @@ export async function PRICE() {
         return errorMessageHandler(error, 'PRICE')
     }
 }
+
+
+// PRICE("btc,eth", "720,1,24").then(console.log)
+// PRICE("btc").then(console.log)
+// PRICE("btc,eth").then(console.log)
+
+// PRICE("0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca", "base").then(console.log)
