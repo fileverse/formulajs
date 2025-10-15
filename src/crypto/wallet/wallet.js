@@ -23,9 +23,9 @@ export async function WALLET() {
 
     //   const resolvedAddresses = await getResolvedAddresses(addresses)
 
-      let url = `${baseUrl}?service=wallet&addresses=${encodeURIComponent(addresses)}&chains=${encodeURIComponent(chains)}&query=${encodeURIComponent(query)}`
+      let url = `${baseUrl}?service=wallet&addresses=${addresses}&chains=${chains}&query=${query}`
       if (time) {
-          url += `&time=${encodeURIComponent(time)}`
+          url += `&time=${time}`
       }
 
       const res = await fetch(url)
@@ -49,3 +49,8 @@ export async function WALLET() {
         return errorMessageHandler(error, 'WALLET')
     }
 }
+
+
+// WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "ethereum", "balance", "720,1,24").then(console.log)
+// WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, 0xfA0253943c3FF0e43898cba5A7a0dA9D17C27995", "ethereum", "txns", "720").then(console.log)
+// WALLET("0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", "ethereum", "balance").then(console.log)
