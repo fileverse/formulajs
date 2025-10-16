@@ -27,7 +27,7 @@ export const WALLET_metadata = {
         },
         {
             name: 'timeframe',
-            detail: 'Comma separated timeframe in hours. Only applies for "txns" queries, if not provided it fetches transaction from latest block.',
+            detail: 'Comma separated timeframe in hours. Only applies to "txns" queries, if not provided it fetches transaction from latest block.',
             example: '"17520"',
             require: 'm',
             type: 'string'
