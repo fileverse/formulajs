@@ -20,14 +20,14 @@ export const WALLET_metadata = {
         },
         {
             name: 'query',
-            detail: 'Type of query, can be "txns" or "balance" ',
+            detail: 'Type of query, can be "txns" or "balance"',
             example: '"txns"',
             require: 'm',
             type: 'string'
         },
         {
             name: 'timeframe',
-            detail: 'Comma separated timeframe in hours',
+            detail: 'Comma separated timeframe in hours. Only applies for "txns" queries, if not provided it fetches transaction from latest block.',
             example: '"17520"',
             require: 'm',
             type: 'string'
