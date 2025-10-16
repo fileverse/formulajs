@@ -21,7 +21,7 @@ export async function WALLET() {
 
       addresses = addresses?.replace(/\s+/g, "")
       chains = chains?.replace(/\s+/g, "")
-      time = chains?.replace(/\s+/g, "")
+      time = time?.replace(/\s+/g, "")
       const baseUrl = 'https://onchain-proxy.fileverse.io'
 
       const resolvedAddresses = await getResolvedAddresses(addresses)

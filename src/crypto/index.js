@@ -17,6 +17,7 @@ export { TALLY }  from './tally/tally.js'
 export { DUNE } from './dune-sim/dune-sim.js'
 export { PRICE } from './price/price.js'
 export { WALLET } from './wallet/wallet.js'
+export { YIELD } from './yield/yield.js'
 // export {GNOSISPAY} from './gnosispay/gnosispay.js'
 
 
