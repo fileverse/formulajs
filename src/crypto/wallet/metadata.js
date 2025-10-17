@@ -27,9 +27,9 @@ export const WALLET_metadata = {
         },
         {
             name: 'timeframe',
-            detail: 'Optional comma-separated timeframes in hours. Defaults to latest block for “txns” and latest balance for “balance”',
+            detail: 'Comma-separated timeframes in hours. Defaults to latest block for “txns” and latest balance for “balance”',
             example: '"17520"',
-            require: 'm',
+            require: 'o',
             type: 'string'
         },
     ]

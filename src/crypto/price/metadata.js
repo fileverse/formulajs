@@ -23,7 +23,7 @@ export const PRICE_metadata = {
             detail: 'Comma separated timeframe for token address, Skip for coin symbol',
             example: '"1,24"',
             require: 'o',
-            type: 'any'
+            type: 'string'
         }
     ]
 }
