@@ -856,6 +856,10 @@ export function FLOOR(number, significance) {
     return anyError
   }
 
+  if(number === 0 && significance === 0){
+    return 0
+  }
+
   if (!significance) {
     return error.div0
   }
