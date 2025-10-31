@@ -17,17 +17,12 @@ export async function handleScanRequest({
   chainId,
   network
 }) {
-  const API_INFO_MAP = {
-    BASE: { url: 'https://api.basescan.org/api', apiKeyName: SERVICES_API_KEY.Basescan },
-    ETHERSCAN: { url: 'https://api.etherscan.io/v2/api', apiKeyName: SERVICES_API_KEY.Etherscan },
-    GNOSIS: { url: 'https://api.gnosisscan.io/api', apiKeyName: SERVICES_API_KEY.Gnosisscan }
-  }
 
   if (type !== 'gas') {
     address = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
   }
 
-  const apiInfo = API_INFO_MAP[functionName]
+  const apiInfo = { url: 'https://api.etherscan.io/v2/api', apiKeyName: SERVICES_API_KEY.Etherscan }
   const baseUrl = apiInfo?.url
     if (!baseUrl) throw new ValidationError(`Api not found for: ${functionName}`)
 
@@ -44,7 +39,6 @@ export async function handleScanRequest({
 
   const module = action === 'gasoracle' ? 'gastracker' : 'account';
   let url = `${baseUrl}?chainid=${chainId}&module=${module}&action=${action}&apikey=${apiKey}`;
-
   if (['all-txns', 'token-txns', 'nft-txns'].includes(type)) {
     url += `&address=${address}&startblock=0&endblock=99999999&sort=asc`
 

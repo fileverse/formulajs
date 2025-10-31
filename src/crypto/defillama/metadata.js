@@ -1,7 +1,7 @@
 import { SERVICES_API_KEY } from '../../utils/constants.js'
 export const DEFILLAMA_metadata = {
   API_KEY: SERVICES_API_KEY.Defillama,
-  LOGO: 'https://defillama.com/favicon-32x32.png',
+  LOGO: 'https://defillama.com/favicon.ico',
   BRAND_COLOR: '#f8f5fc',
   BRAND_SECONDARY_COLOR: '#855dcd',
   n: 'DEFILLAMA',
