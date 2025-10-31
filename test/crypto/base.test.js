@@ -82,7 +82,7 @@ describe('BASE', () => {
     const result = await BASE('all-txns', '0xabc', '01/01/2023', '01/02/2023', 1, 10)
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
     expect(result.functionName).to.equal('BASE')
-    expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Basescan)
+    expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Etherscan)
   })
 
 
@@ -94,7 +94,7 @@ describe('BASE', () => {
     const result = await BASE('gas')
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.INVALID_API_KEY)
     expect(result.functionName).to.equal('BASE')
-    expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Basescan)
+    expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Etherscan)
   })
 
     it('should return RATE_LIMIT when rate limit reached', async () => {
@@ -105,7 +105,7 @@ describe('BASE', () => {
     const result = await BASE('gas')
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
     expect(result.functionName).to.equal('BASE')
-        expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Basescan)
+        expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Etherscan)
   })
 
   it('should return RATE_LIMIT when network status is 429', async () => {
@@ -116,7 +116,7 @@ describe('BASE', () => {
     const result = await BASE('gas')
     expect(result.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
     expect(result.functionName).to.equal('BASE')
-        expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Basescan)
+        expect(result.apiKeyName).to.equal(SERVICES_API_KEY.Etherscan)
   })
 
 
