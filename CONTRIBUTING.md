@@ -32,28 +32,54 @@ dSheets.new is:
 - All crypto-related formulas must be added to `src/crypto.js`
 - Function metadata for suggestion box and API key constants should be defined in `src/crypto-constants.js`
 
+
+### 2. Function schema
+Create a schema to validate function's parameters. Here is an example for a function (`SAFE`) schema
+```javascript
+export const safeParamsSchema = z.object({
+  address: z.string().nonempty(),
+  utility: z.literal('txns'),
+  chain:   z.enum(['ethereum','gnosis']),
+  limit:   z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"limit" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
+  offset:  z.number().int().nonnegative().default(0),
+})
+```
+
 ### 2. Function Implementation
 
-Here's an example of a well-structured crypto formula:
+Add function implementation. Here's an example of a crypto formula implementation:
 
 ```javascript
-export async function ETHERSCAN(address, page, offset) {
-    const API_KEY = window.localStorage.getItem(SERVICE_API_KEY.Etherscan);
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${page}&offset=${offset}&sort=asc&apikey=${API_KEY}`;
+export async function SAFE() {
+  try {
+    const [address, utility, chain, limit = 10, offset = 0] = utils.argsToArray(arguments)
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new NetworkError('ETHERSCAN', res.status);
-        }
-        const json = await response.json();
-        if (json.result.includes("Invalid API Key")) {
-          throw new MissingApiKeyError(SERVICES_API_KEY.Etherscan);
-        }
-        return json.result;
-    } catch (error) {
-        return errorMessageHandler(err, 'ETHERSCAN')
+    validateParams(safeParamsSchema, { address, utility, chain, limit, offset })
+
+    const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Safe)
+
+    const chainId = SAFE_CHAIN_MAP[chain]
+    if (!chainId) throw new ValidationError(`Invalid chain: ${chain}`)
+
+    const resolved = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
+
+
+    const url = `https://api.safe.global/tx-service/${chainId}/api/v2/safes/${resolved}/multisig-transactions?limit=${limit}&offset=${offset}`
+
+      const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, serviceName: 'Etherscan', headers: { Authorization: `Bearer ${apiKey}` } });
+    const res = await fetch(finalUrl, { headers: HEADERS })
+    if (!res.ok) throw new NetworkError(SERVICES_API_KEY.Safe, res.status)
+    const json = await res.json()
+
+    if (!Array.isArray(json.results)) {
+      throw new ValidationError('Invalid API response')
     }
+
+
+    return json.results.map(({ confirmations, dataDecoded, ...rest }) => rest)
+  } catch (err) {
+    return errorMessageHandler(err, 'SAFE')
+  }
 }
 ```
 
