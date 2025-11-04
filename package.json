@@ -1,6 +1,6 @@
 {
   "name": "@fileverse-dev/formulajs",
-  "version": "4.4.31-circles-patch-1",
+  "version": "4.4.31-circles-patch-4",
   "description": "JavaScript implementation of most Microsoft Excel formula functions",
   "author": "Formulajs",
   "publishConfig": {

@@ -12,16 +12,14 @@ export { LENS } from './lens/lens.js'
 export { NEYNAR } from './neynar/neynar.js'
 export { SAFE } from './safe/safe.js'
 export { UNISWAP } from './uniswap/uniswap.js'
-export { SMARTCONTRACT }from './smart-contract/smart-contract.js'
-export { TALLY }  from './tally/tally.js'
+export { SMARTCONTRACT } from './smart-contract/smart-contract.js'
+export { TALLY } from './tally/tally.js'
 export { DUNE } from './dune-sim/dune-sim.js'
 export { PRICE } from './price/price.js'
 export { WALLET } from './wallet/wallet.js'
 export { YIELD } from './yield/yield.js'
+export { CIRCLES } from './circles/circles.js'
 // export {GNOSISPAY} from './gnosispay/gnosispay.js'
-
-
-
 
 export async function FLVURL() {
   return new Promise((resolve) => {

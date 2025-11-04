@@ -14,6 +14,8 @@ export async function CIRCLES() {
     const resolved = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
     const dataClient = new CirclesData('https://rpc.aboutcircles.com')
 
+    const limit = Number.isFinite(Number(entries)) && Number(entries) > 0 ? Number(entries) : 10
+
     const runOnePage = async (maybeQuery) => {
       const q = await maybeQuery
       if (q && typeof q.queryNextPage === 'function') {
@@ -25,17 +27,20 @@ export async function CIRCLES() {
 
     switch (functionName) {
       case 'trust':
-        return await runOnePage(dataClient.getTrustRelations(resolved, entries))
+        return await runOnePage(dataClient.getTrustRelations(resolved, limit))
 
       case 'transactions':
-        return await runOnePage(dataClient.getTransactionHistory(resolved, entries))
+        return await runOnePage(dataClient.getTransactionHistory(resolved, limit))
 
-      case 'profile':
-        return dataClient.getAvatarInfo(resolved)
+      case 'profile': {
+        const res = await dataClient.getAvatarInfo(resolved)
+        return [res]
+      }
 
-      case 'balances':
-        return dataClient.getTotalBalanceV2(resolved)
-
+      case 'balances': {
+        const balance = await dataClient.getTotalBalanceV2(resolved)
+        return [{ 'CRC Balance': balance }]
+      }
       default:
         throw new ValidationError('Unsupported functionName')
     }
