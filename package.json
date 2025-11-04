@@ -1,6 +1,6 @@
 {
   "name": "@fileverse-dev/formulajs",
-  "version": "4.4.31",
+  "version": "4.4.31-circles-patch-1",
   "description": "JavaScript implementation of most Microsoft Excel formula functions",
   "author": "Formulajs",
   "publishConfig": {
@@ -45,7 +45,7 @@
   ],
   "scripts": {
     "build:crypto-constants": "esbuild src/crypto-constants.js --bundle --outfile=lib/esm/crypto-constants.mjs --format=esm",
-    "build": "rollup -c && npm run types && npm run build:crypto-constants",
+    "build": "rollup -c && npm run build:crypto-constants",
     "format": "npm run prettier:fix && npm run lint:fix",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -61,6 +61,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@circles-sdk/data": "^0.29.1",
+    "@circles-sdk/sdk": "^0.29.1",
     "bessel": "^1.0.2",
     "esbuild": "^0.25.4",
     "js-sha3": "^0.9.3",
