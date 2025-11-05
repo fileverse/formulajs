@@ -4,7 +4,10 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "outDir": "types",
-    "target": "ES6"
+    "target": "ES6",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true
   },
   "include": ["lib/cjs/index.cjs", "lib/esm/index.mjs"]
 }
