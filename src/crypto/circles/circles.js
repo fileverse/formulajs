@@ -7,9 +7,9 @@ import { ValidationError } from '../../utils/error-instances.js'
 
 export async function CIRCLES() {
   try {
-    const [address, functionName, entries] = utils.argsToArray(arguments)
+    const [functionName, address, entries] = utils.argsToArray(arguments)
 
-    validateParams(circlesParamsSchema, { address, functionName, entries })
+    validateParams(circlesParamsSchema, { functionName, address, entries })
 
     const resolved = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
     const dataClient = new CirclesData('https://rpc.aboutcircles.com')
