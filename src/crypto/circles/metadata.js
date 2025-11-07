@@ -1,4 +1,5 @@
 export const CIRCLES_metadata = {
+  LOGO: 'https://avatars.githubusercontent.com/u/159135534?s=200&v=4',
   n: 'CIRCLES',
   t: 20,
   d: 'Query the list of transactions performed by a Circles address, with optional pagination.',
