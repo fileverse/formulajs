@@ -89,6 +89,11 @@ export function DATE(year, month, day) {
     if (result.getFullYear() < 0) {
       result = error.num
     }
+    const pad = (n) => n.toString().padStart(2, "0");
+    const dayResult = pad(result.getDate());
+    const monthResult = pad(result.getMonth() + 1);
+    const yearResult = result.getFullYear();
+    result = `${dayResult}/${monthResult}/${yearResult}`
   }
 
   return returnSerial ? dateToSerial(result) : result
@@ -199,7 +204,7 @@ export function DATEVALUE(date_text) {
 
   const dateValue = new Date(date_text)
 
-  return returnSerial ? dateToSerial(dateValue) : dateValue
+  return  dateToSerial(dateValue);
 }
 
 /**
@@ -349,7 +354,15 @@ export function EDATE(start_date, months) {
 
   start_date.setDate(storedDay)
 
-  return returnSerial ? dateToSerial(start_date) : start_date
+
+  let widthoutSerial = start_date;
+  const pad = (n) => n.toString().padStart(2, "0");
+  const dayResult = pad(widthoutSerial.getDate());
+  const monthResult = pad(widthoutSerial.getMonth() + 1);
+  const yearResult = widthoutSerial.getFullYear();
+  widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
+
+  return returnSerial ? dateToSerial(start_date) : widthoutSerial
 }
 
 /**
@@ -376,8 +389,97 @@ export function EOMONTH(start_date, months) {
 
   const eoMonth = new Date(start_date.getFullYear(), start_date.getMonth() + months + 1, 0)
 
-  return returnSerial ? dateToSerial(eoMonth) : eoMonth
+
+  let widthoutSerial = eoMonth;
+  const pad = (n) => n.toString().padStart(2, "0");
+  const dayResult = pad(widthoutSerial.getDate());
+  const monthResult = pad(widthoutSerial.getMonth() + 1);
+  const yearResult = widthoutSerial.getFullYear();
+  widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
+
+  return returnSerial ? dateToSerial(eoMonth) : widthoutSerial
 }
+
+export function EPOCHTODATE(timestamp, timeUnit = 1) {
+  if (isNaN(timestamp)) {
+    return error.num;
+  }
+  let ms;
+
+  switch (timeUnit) {
+    case 1: // seconds → milliseconds
+      ms = timestamp * 1000;
+      break;
+
+    case 2: // milliseconds
+      ms = timestamp;
+      break;
+
+    case 3: // microseconds → milliseconds
+      ms = timestamp / 1000;
+      break;
+
+    default:
+      throw new Error("Invalid time_unit. Use 1 (sec), 2 (ms), or 3 (µs).");
+  }
+
+  const d = new Date(ms);
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  const day = pad(d.getDate());
+  const month = pad(d.getMonth() + 1);
+  const year = d.getFullYear();
+
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  const seconds = pad(d.getSeconds());
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+}
+
+export function SEQUENCE(rows, columns = 1, start = 1, step = 1) {
+  const result = [];
+
+  const isDate = start instanceof Date;
+
+  // Normalize date (remove time)
+  const normalizeDate = (d) =>
+    new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+
+  // Convert JS date → Google Sheets serial number
+  const dateToSerial = (d) => {
+    const utcDate = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+    const gsEpoch = Date.UTC(1899, 11, 30); // Google Sheets epoch
+    return (utcDate - gsEpoch) / (1000 * 60 * 60 * 24);
+  };
+
+  if (isDate) start = normalizeDate(start);
+
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+
+    for (let c = 0; c < columns; c++) {
+      const index = r * columns + c;
+
+      if (isDate) {
+        // Date sequence → step = days
+        const d = new Date(start);
+        d.setUTCDate(start.getUTCDate() + index * step);
+
+        // Return the DATEVALUE serial number instead of Date
+        row.push(dateToSerial(d));
+      } else {
+        // Numeric sequence
+        row.push(start + index * step);
+      }
+    }
+
+    result.push(row);
+  }
+
+  return result;
+}
+
 
 /**
  * Converts a serial number to an hour.
@@ -574,7 +676,18 @@ export const NETWORKDAYS_INTL = NETWORKDAYS.INTL
  * @returns
  */
 export function NOW() {
-  return returnSerial ? dateToSerial(new Date()) : new Date()
+  const d = new Date()
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  const day = pad(d.getDate());
+  const month = pad(d.getMonth() + 1);
+  const year = d.getFullYear();
+
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+  const seconds = pad(d.getSeconds());
+
+  return returnSerial ? dateToSerial(d) : `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
 
 /**
@@ -939,3 +1052,10 @@ export function YEARFRAC(start_date, end_date, basis) {
       return (ed + em * 30 + ey * 360 - (sd + sm * 30 + sy * 360)) / 360
   }
 }
+
+
+// const start = new Date(2025, 0, 1);   // Jan 1 2025
+// const end = new Date(2025, 11, 31);   // Dec 31 2025
+
+// const days = networkDaysIntl(start, end, 7);
+// console.log(days);
