@@ -64,6 +64,18 @@ const WEEKEND_TYPES = [
   [6, 6]
 ]
 
+const datePartition = (date) => {
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+  return { day, month, year, hours, minutes, seconds };
+}
+
 /**
  * Returns the serial number of a particular date.
  *
@@ -89,10 +101,8 @@ export function DATE(year, month, day) {
     if (result.getFullYear() < 0) {
       result = error.num
     }
-    const pad = (n) => n.toString().padStart(2, "0");
-    const dayResult = pad(result.getDate());
-    const monthResult = pad(result.getMonth() + 1);
-    const yearResult = result.getFullYear();
+
+    const { day: dayResult, month: monthResult, year: yearResult } = datePartition(result);
     result = `${dayResult}/${monthResult}/${yearResult}`
   }
 
@@ -204,7 +214,7 @@ export function DATEVALUE(date_text) {
 
   const dateValue = new Date(date_text)
 
-  return  dateToSerial(dateValue);
+  return dateToSerial(dateValue);
 }
 
 /**
@@ -356,10 +366,7 @@ export function EDATE(start_date, months) {
 
 
   let widthoutSerial = start_date;
-  const pad = (n) => n.toString().padStart(2, "0");
-  const dayResult = pad(widthoutSerial.getDate());
-  const monthResult = pad(widthoutSerial.getMonth() + 1);
-  const yearResult = widthoutSerial.getFullYear();
+  const { day: dayResult, month: monthResult, year: yearResult } = datePartition(widthoutSerial);
   widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
 
   return returnSerial ? dateToSerial(start_date) : widthoutSerial
@@ -391,10 +398,7 @@ export function EOMONTH(start_date, months) {
 
 
   let widthoutSerial = eoMonth;
-  const pad = (n) => n.toString().padStart(2, "0");
-  const dayResult = pad(widthoutSerial.getDate());
-  const monthResult = pad(widthoutSerial.getMonth() + 1);
-  const yearResult = widthoutSerial.getFullYear();
+  const { day: dayResult, month: monthResult, year: yearResult } = datePartition(widthoutSerial);
   widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
 
   return returnSerial ? dateToSerial(eoMonth) : widthoutSerial
@@ -424,15 +428,8 @@ export function EPOCHTODATE(timestamp, timeUnit = 1) {
   }
 
   const d = new Date(ms);
-  const pad = (n) => n.toString().padStart(2, "0");
 
-  const day = pad(d.getDate());
-  const month = pad(d.getMonth() + 1);
-  const year = d.getFullYear();
-
-  const hours = pad(d.getHours());
-  const minutes = pad(d.getMinutes());
-  const seconds = pad(d.getSeconds());
+  const { day, month, year, hours, minutes, seconds } = datePartition(d);
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
@@ -677,16 +674,7 @@ export const NETWORKDAYS_INTL = NETWORKDAYS.INTL
  */
 export function NOW() {
   const d = new Date()
-  const pad = (n) => n.toString().padStart(2, "0");
-
-  const day = pad(d.getDate());
-  const month = pad(d.getMonth() + 1);
-  const year = d.getFullYear();
-
-  const hours = pad(d.getHours());
-  const minutes = pad(d.getMinutes());
-  const seconds = pad(d.getSeconds());
-
+  const { day, month, year, hours, minutes, seconds } = datePartition(d);
   return returnSerial ? dateToSerial(d) : `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
 
@@ -1053,9 +1041,3 @@ export function YEARFRAC(start_date, end_date, basis) {
   }
 }
 
-
-// const start = new Date(2025, 0, 1);   // Jan 1 2025
-// const end = new Date(2025, 11, 31);   // Dec 31 2025
-
-// const days = networkDaysIntl(start, end, 7);
-// console.log(days);
