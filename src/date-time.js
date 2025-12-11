@@ -437,20 +437,15 @@ export function EPOCHTODATE(timestamp, timeUnit = 1) {
 export function SEQUENCE(rows, columns = 1, start = 1, step = 1) {
   const result = [];
 
-  const isDate = start instanceof Date;
-
-  // Normalize date (remove time)
-  const normalizeDate = (d) =>
-    new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-
-  // Convert JS date → Google Sheets serial number
-  const dateToSerial = (d) => {
-    const utcDate = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-    const gsEpoch = Date.UTC(1899, 11, 30); // Google Sheets epoch
-    return (utcDate - gsEpoch) / (1000 * 60 * 60 * 24);
+  const isDateInput = (val) => {
+    if (val instanceof Date) return true;
+    if (typeof val === "string" && !isNaN(Date.parse(val))) return true;
+    return false;
   };
 
-  if (isDate) start = normalizeDate(start);
+  const isDate = isDateInput(start);
+
+  if (isDate) start = DATEVALUE(start);
 
   for (let r = 0; r < rows; r++) {
     const row = [];
@@ -458,17 +453,7 @@ export function SEQUENCE(rows, columns = 1, start = 1, step = 1) {
     for (let c = 0; c < columns; c++) {
       const index = r * columns + c;
 
-      if (isDate) {
-        // Date sequence → step = days
-        const d = new Date(start);
-        d.setUTCDate(start.getUTCDate() + index * step);
-
-        // Return the DATEVALUE serial number instead of Date
-        row.push(dateToSerial(d));
-      } else {
-        // Numeric sequence
         row.push(start + index * step);
-      }
     }
 
     result.push(row);
@@ -1041,3 +1026,7 @@ export function YEARFRAC(start_date, end_date, basis) {
   }
 }
 
+
+
+// const r = SEQUENCE(2, 1, DATE(2025,1,1),1);
+// console.log(r);
