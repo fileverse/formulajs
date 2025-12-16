@@ -64,17 +64,31 @@ const WEEKEND_TYPES = [
   [6, 6]
 ]
 
-const datePartition = (date) => {
+const datePartition = (date, utc = false) => {
   const pad = (n) => n.toString().padStart(2, "0");
 
-  const day = pad(date.getDate());
-  const month = pad(date.getMonth() + 1);
-  const year = date.getFullYear();
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
+  const day = pad(utc ? date.getUTCDate() : date.getDate());
+  const month = pad(
+    (utc ? date.getUTCMonth() : date.getMonth()) + 1
+  );
+  const year = utc
+    ? date.getUTCFullYear()
+    : date.getFullYear();
+
+  const hours = pad(
+    utc ? date.getUTCHours() : date.getHours()
+  );
+  const minutes = pad(
+    utc ? date.getUTCMinutes() : date.getMinutes()
+  );
+  const seconds = pad(
+    utc ? date.getUTCSeconds() : date.getSeconds()
+  );
+
   return { day, month, year, hours, minutes, seconds };
-}
+};
+
+
 
 /**
  * Returns the serial number of a particular date.
@@ -429,7 +443,7 @@ export function EPOCHTODATE(timestamp, timeUnit = 1) {
 
   const d = new Date(ms);
 
-  const { day, month, year, hours, minutes, seconds } = datePartition(d);
+  const { day, month, year, hours, minutes, seconds } = datePartition(d, true);
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
