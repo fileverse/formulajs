@@ -64,6 +64,32 @@ const WEEKEND_TYPES = [
   [6, 6]
 ]
 
+const datePartition = (date, utc = false) => {
+  const pad = (n) => n.toString().padStart(2, "0");
+
+  const day = pad(utc ? date.getUTCDate() : date.getDate());
+  const month = pad(
+    (utc ? date.getUTCMonth() : date.getMonth()) + 1
+  );
+  const year = utc
+    ? date.getUTCFullYear()
+    : date.getFullYear();
+
+  const hours = pad(
+    utc ? date.getUTCHours() : date.getHours()
+  );
+  const minutes = pad(
+    utc ? date.getUTCMinutes() : date.getMinutes()
+  );
+  const seconds = pad(
+    utc ? date.getUTCSeconds() : date.getSeconds()
+  );
+
+  return { day, month, year, hours, minutes, seconds };
+};
+
+
+
 /**
  * Returns the serial number of a particular date.
  *
@@ -89,6 +115,9 @@ export function DATE(year, month, day) {
     if (result.getFullYear() < 0) {
       result = error.num
     }
+
+    const { day: dayResult, month: monthResult, year: yearResult } = datePartition(result);
+    result = `${dayResult}/${monthResult}/${yearResult}`
   }
 
   return returnSerial ? dateToSerial(result) : result
@@ -199,7 +228,7 @@ export function DATEVALUE(date_text) {
 
   const dateValue = new Date(date_text)
 
-  return returnSerial ? dateToSerial(dateValue) : dateValue
+  return dateToSerial(dateValue);
 }
 
 /**
@@ -349,7 +378,12 @@ export function EDATE(start_date, months) {
 
   start_date.setDate(storedDay)
 
-  return returnSerial ? dateToSerial(start_date) : start_date
+
+  let widthoutSerial = start_date;
+  const { day: dayResult, month: monthResult, year: yearResult } = datePartition(widthoutSerial);
+  widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
+
+  return returnSerial ? dateToSerial(start_date) : widthoutSerial
 }
 
 /**
@@ -376,8 +410,72 @@ export function EOMONTH(start_date, months) {
 
   const eoMonth = new Date(start_date.getFullYear(), start_date.getMonth() + months + 1, 0)
 
-  return returnSerial ? dateToSerial(eoMonth) : eoMonth
+
+  let widthoutSerial = eoMonth;
+  const { day: dayResult, month: monthResult, year: yearResult } = datePartition(widthoutSerial);
+  widthoutSerial = `${dayResult}/${monthResult}/${yearResult}`
+
+  return returnSerial ? dateToSerial(eoMonth) : widthoutSerial
 }
+
+export function EPOCHTODATE(timestamp, timeUnit = 1) {
+  if (isNaN(timestamp)) {
+    return error.num;
+  }
+  let ms;
+
+  switch (timeUnit) {
+    case 1: // seconds → milliseconds
+      ms = timestamp * 1000;
+      break;
+
+    case 2: // milliseconds
+      ms = timestamp;
+      break;
+
+    case 3: // microseconds → milliseconds
+      ms = timestamp / 1000;
+      break;
+
+    default:
+      throw new Error("Invalid time_unit. Use 1 (sec), 2 (ms), or 3 (µs).");
+  }
+
+  const d = new Date(ms);
+
+  const { day, month, year, hours, minutes, seconds } = datePartition(d, true);
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
+}
+
+export function SEQUENCE(rows, columns = 1, start = 1, step = 1) {
+  const result = [];
+
+  const isDateInput = (val) => {
+    if (val instanceof Date) return true;
+    if (typeof val === "string" && !isNaN(Date.parse(val))) return true;
+    return false;
+  };
+
+  const isDate = isDateInput(start);
+
+  if (isDate) start = DATEVALUE(start);
+
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+
+    for (let c = 0; c < columns; c++) {
+      const index = r * columns + c;
+
+        row.push(start + index * step);
+    }
+
+    result.push(row);
+  }
+
+  return result;
+}
+
 
 /**
  * Converts a serial number to an hour.
@@ -574,7 +672,9 @@ export const NETWORKDAYS_INTL = NETWORKDAYS.INTL
  * @returns
  */
 export function NOW() {
-  return returnSerial ? dateToSerial(new Date()) : new Date()
+  const d = new Date()
+  const { day, month, year, hours, minutes, seconds } = datePartition(d);
+  return returnSerial ? dateToSerial(d) : `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
 }
 
 /**
@@ -939,3 +1039,8 @@ export function YEARFRAC(start_date, end_date, basis) {
       return (ed + em * 30 + ey * 360 - (sd + sm * 30 + sy * 360)) / 360
   }
 }
+
+
+
+// const r = SEQUENCE(2, 1, DATE(2025,1,1),1);
+// console.log(r);
