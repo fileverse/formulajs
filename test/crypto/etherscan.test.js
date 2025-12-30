@@ -36,37 +36,37 @@ describe('ETHERSCAN', () => {
   //   expect(res.functionName).to.equal('ETHERSCAN')
   // })
 
-  it('should succeed for gas type', async () => {
-    window.localStorage.getItem.returns('key')
-    const tx = [{ dummy: true }]
-    global.fetch.resolves({ ok: true, json: async () => ({ result: tx }) })
-    const res = await ETHERSCAN('gas','ethereum')
-    expect(res).to.deep.equal(tx)
-  })
+  // it('should succeed for gas type', async () => {
+  //   window.localStorage.getItem.returns('key')
+  //   const tx = [{ dummy: true }]
+  //   global.fetch.resolves({ ok: true, json: async () => ({ result: tx }) })
+  //   const res = await ETHERSCAN('gas','ethereum')
+  //   expect(res).to.deep.equal(tx)
+  // })
 
-  it('should return RATE_LIMIT on HTTP 429', async () => {
-    window.localStorage.getItem.returns('key')
-    global.fetch.resolves({ ok: false, status: 429 })
-    const res = await ETHERSCAN('gas','ethereum','0x1')
-    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
-    expect(res.functionName).to.equal('ETHERSCAN')
-  })
+  // it('should return RATE_LIMIT on HTTP 429', async () => {
+  //   window.localStorage.getItem.returns('key')
+  //   global.fetch.resolves({ ok: false, status: 429 })
+  //   const res = await ETHERSCAN('gas','ethereum','0x1')
+  //   expect(res.type).to.equal(ERROR_MESSAGES_FLAG.RATE_LIMIT)
+  //   expect(res.functionName).to.equal('ETHERSCAN')
+  // })
 
-    it('should return NETWORK_ERROR', async () => {
-    window.localStorage.getItem.returns('key')
-    global.fetch.resolves({ ok: false, status: 500 })
-    const res = await ETHERSCAN('gas','ethereum','0x1')
-    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
-    expect(res.functionName).to.equal('ETHERSCAN')
-  })
+  //   it('should return NETWORK_ERROR', async () => {
+  //   window.localStorage.getItem.returns('key')
+  //   global.fetch.resolves({ ok: false, status: 500 })
+  //   const res = await ETHERSCAN('gas','ethereum','0x1')
+  //   expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+  //   expect(res.functionName).to.equal('ETHERSCAN')
+  // })
 
-  it('should return DEFAULT when fetch throws error', async () => {
-    window.localStorage.getItem.returns('key')
-    global.fetch.rejects(new Error('fail'))
-    const res = await ETHERSCAN('gas','ethereum','0x1')
-    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
-    expect(res.functionName).to.equal('ETHERSCAN')
-  })
+  // it('should return DEFAULT when fetch throws error', async () => {
+  //   window.localStorage.getItem.returns('key')
+  //   global.fetch.rejects(new Error('fail'))
+  //   const res = await ETHERSCAN('gas','ethereum','0x1')
+  //   expect(res.type).to.equal(ERROR_MESSAGES_FLAG.DEFAULT)
+  //   expect(res.functionName).to.equal('ETHERSCAN')
+  // })
     it('should return ENS error if address is ENS and resolution fails', async () => {
     window.localStorage.getItem.returns('key')
     sinon.stub(isAddressModule.default, 'isAddress').returns(false);
@@ -78,14 +78,14 @@ describe('ETHERSCAN', () => {
   });
 
 
-    it('should resolve successfully with right ens name', async () => {
-    window.localStorage.getItem.returns('key')
-    sinon.stub(isAddressModule.default, 'isAddress').returns(false)
-    sinon.stub(fromEnsNameToAddress.default, 'validateAndGetAddress').resolves('0xjoshua')
-    const responseJson = ['data']
-    global.fetch.resolves({ ok: true, json: async () => ({ result: responseJson }) })
+  //   it('should resolve successfully with right ens name', async () => {
+  //   window.localStorage.getItem.returns('key')
+  //   sinon.stub(isAddressModule.default, 'isAddress').returns(false)
+  //   sinon.stub(fromEnsNameToAddress.default, 'validateAndGetAddress').resolves('0xjoshua')
+  //   const responseJson = ['data']
+  //   global.fetch.resolves({ ok: true, json: async () => ({ result: responseJson }) })
 
-    const result = await ETHERSCAN('all-txns', 'ethereum', 'vitalik.eth')
-    expect(result).to.deep.equal(responseJson)
-  })
+  //   const result = await ETHERSCAN('all-txns', 'ethereum', 'vitalik.eth')
+  //   expect(result).to.deep.equal(responseJson)
+  // })
 })

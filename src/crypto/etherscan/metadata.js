@@ -43,6 +43,13 @@ export const ETHERSCAN_metadata = {
       example: `"01/07/2025"`,
       require: 'o',
       type: 'string'
+    },
+            {
+      name: 'columnsName',
+      detail: 'Filter columns by name in output. Comma separated list.',
+      example: `"id,address"`,
+      require: 'o',
+      type: 'string'
     }
   ]
 }

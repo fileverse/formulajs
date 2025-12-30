@@ -7,13 +7,12 @@ import * as utils from '../../utils/common.js'
 import { InvalidApiKeyError, NetworkError } from '../../utils/error-instances.js'
 import { errorMessageHandler, validateParams } from '../../utils/error-messages-handler.js'
 import { getUrlAndHeaders } from '../../utils/proxy-url-map.js'
-import {coingeckoParamsSchema} from './coingecko-schema.js'
-
+import { coingeckoParamsSchema } from './coingecko-schema.js'
 
 export async function COINGECKO() {
   try {
-    const [category, param1, param2] = utils.argsToArray(arguments)
-    validateParams(coingeckoParamsSchema, { category, param1, param2 })
+    const [category, param1, param2, columnName = null] = utils.argsToArray(arguments)
+    validateParams(coingeckoParamsSchema, { category, param1, param2, columnName })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Coingecko)
 
@@ -48,7 +47,7 @@ export async function COINGECKO() {
         break
       }
     }
-    const {URL: finalUrl, HEADERS} = getUrlAndHeaders({url, serviceName: 'Coingecko', headers})
+    const { URL: finalUrl, HEADERS } = getUrlAndHeaders({ url, serviceName: 'Coingecko', headers })
 
     const res = await fetch(finalUrl + "?refresh=true", { headers: HEADERS })
     const json = await res.json()
@@ -73,6 +72,16 @@ export async function COINGECKO() {
         if (typeof value !== 'object' || value === null) {
           flat[key] = value
         }
+      }
+      if (columnName) {
+        const filterData = {}
+        const filterColumnName = columnName.split(',').map(s => s.trim())
+        filterColumnName.forEach(col => {
+          if (flat[col] !== undefined) {
+            filterData[col] = flat[col]
+          }
+        });
+        return filterData;
       }
       return flat
     })

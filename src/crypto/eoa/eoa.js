@@ -14,9 +14,9 @@ import { toTimestamp } from '../../utils/toTimestamp.js'
 
 export async function EOA() {
   try {
-    const [addresses, category, chains, startTime, endTime, page = 1, offset = 10] =
+    const [addresses, category, chains, startTime, endTime, page = 1, offset = 10, columnName = null] =
       utils.argsToArray(arguments)
-    validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset })
+    validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset, columnName })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Etherscan)
 
@@ -85,6 +85,16 @@ export async function EOA() {
           data.forEach(item => out.push({ chain, address: addr, name: ADDRESS_MAP[addr], ...item }))
         }
       }
+    }
+    if(columnName){
+      const filterColumnName = columnName.split(',').map(s => s.trim())
+      return out.map(obj =>
+        Object.fromEntries(
+          filterColumnName
+            .filter(key => key in obj)
+            .map(key => [key, obj[key]])
+        )
+      );
     }
     return out
   } catch (err) {

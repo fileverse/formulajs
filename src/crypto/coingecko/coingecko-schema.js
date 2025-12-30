@@ -32,6 +32,7 @@ const derivativesSchema = z.object({
   category: z.literal('derivatives'),
   param1:   z.string().nonempty(),
   param2:   z.any().optional(),
+  columnName: z.string().optional(),
 })
 export const coingeckoParamsSchema = z.discriminatedUnion('category', [
   priceSchema,

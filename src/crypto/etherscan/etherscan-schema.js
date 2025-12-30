@@ -9,6 +9,7 @@ const gasSchema = z.object({
   endDate:   dateOrTimestamp.optional(),
   page:      z.number().int().nonnegative().default(1),
   limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"limit" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
+  columnName: z.string().optional(),
 })
 
 const txnSchema = z.object({
@@ -19,6 +20,7 @@ const txnSchema = z.object({
     chain:     z.enum(['ethereum','base','gnosis']),
   page:      z.number().int().nonnegative().default(1),
   limit:     z.number().int().nonnegative().max(MAX_PAGE_LIMIT, {message: `"limit" must be less than or equal to ${MAX_PAGE_LIMIT}`}).default(10),
+  columnName: z.string().optional(),
 })
 
 export const etherscanParamsSchema = z.discriminatedUnion('type', [gasSchema, txnSchema])

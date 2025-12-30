@@ -27,6 +27,13 @@ export const UNISWAP_metadata = {
       example: `"eth"`,
       require: 'm',
       type: 'string'
+    },
+            {
+      name: 'columnsName',
+      detail: 'Filter columns by name in output. Comma separated list.',
+      example: `"id,address"`,
+      require: 'o',
+      type: 'string'
     }
   ]
 }

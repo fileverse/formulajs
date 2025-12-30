@@ -7,9 +7,9 @@ import { ValidationError } from '../../utils/error-instances.js'
 
 export async function CIRCLES() {
   try {
-    const [functionName, address, entries] = utils.argsToArray(arguments)
+    const [functionName, address, entries, columnName] = utils.argsToArray(arguments)
 
-    validateParams(circlesParamsSchema, { functionName, address, entries })
+    validateParams(circlesParamsSchema, { functionName, address, entries, columnName });
 
     const resolved = await fromEnsNameToAddressUtil.default.validateAndGetAddress(address)
     const dataClient = new CirclesData('https://rpc.aboutcircles.com')
@@ -27,10 +27,34 @@ export async function CIRCLES() {
 
     switch (functionName) {
       case 'trust':
-        return await runOnePage(dataClient.getTrustRelations(resolved, limit))
+        const dataTrust = await runOnePage(dataClient.getTrustRelations(resolved, limit));
+        if (columnName) {
+          const filterColumnName = columnName.split(',').map(s => s.trim());
+          return dataTrust.map(obj =>
+            Object.fromEntries(
+              filterColumnName
+                .filter(key => key in obj)
+                .map(key => [key, obj[key]])
+            )
+          );
+        } else {
+          return dataTrust;
+        }
 
       case 'transactions':
-        return await runOnePage(dataClient.getTransactionHistory(resolved, limit))
+        const data = await runOnePage(dataClient.getTransactionHistory(resolved, limit));
+        if (columnName) {
+          const filterColumnName = columnName.split(',').map(s => s.trim());
+          return data.map(obj =>
+            Object.fromEntries(
+              filterColumnName
+                .filter(key => key in obj)
+                .map(key => [key, obj[key]])
+            )
+          );
+        } else {
+          return data;
+        }
 
       case 'profile': {
         const res = await dataClient.getAvatarInfo(resolved)

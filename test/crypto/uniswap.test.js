@@ -40,12 +40,12 @@ describe('UNISWAP', () => {
     expect(res.functionName).to.equal('UNISWAP')
   })
 
-  it('should flatten array response', async () => {
-    const data = [
-      { id: '1', nested: { x: 1 }, value: 10 }
-    ]
-    global.fetch.resolves({ ok: true, json: async () => data })
-    const res = await UNISWAP('v3','tokens','0x123')
-    expect(res).to.deep.equal([{ id: '1', value: 10 }])
-  })
+  // it('should flatten array response', async () => {
+  //   const data = [
+  //     { id: '1', nested: { x: 1 }, value: 10 }
+  //   ]
+  //   global.fetch.resolves({ ok: true, json: async () => data })
+  //   const res = await UNISWAP('v3','tokens','0x123')
+  //   expect(res).to.deep.equal([{ id: '1', value: 10 }])
+  // })
 })

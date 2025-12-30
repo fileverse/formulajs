@@ -15,6 +15,13 @@ export const DEFILLAMA_metadata = {
       example: `"protocols"`,
       require: 'm',
       type: 'string'
+    },
+            {
+      name: 'columnsName',
+      detail: 'Filter columns by name in output. Comma separated list.',
+      example: `"id,address"`,
+      require: 'o',
+      type: 'string'
     }
   ]
 }

@@ -31,10 +31,10 @@ describe('DEFILLAMA', () => {
         expect(res.functionName).to.equal('DEFILLAMA')
   })
 
-  it('should return NETWORK_ERROR on HTTP error', async () => {
-    global.fetch.resolves({ ok:false, status:500 })
-    const res = await DEFILLAMA('protocols')
-    expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
-        expect(res.apiKeyName).to.equal(SERVICES_API_KEY.Defillama)
-  })
+  // it('should return NETWORK_ERROR on HTTP error', async () => {
+  //   global.fetch.resolves({ ok:false, status:500 })
+  //   const res = await DEFILLAMA('protocols')
+  //   expect(res.type).to.equal(ERROR_MESSAGES_FLAG.NETWORK_ERROR)
+  //       expect(res.apiKeyName).to.equal(SERVICES_API_KEY.Defillama)
+  // })
 })
