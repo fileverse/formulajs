@@ -4,6 +4,7 @@ import { errorMessageHandler } from '../../utils/error-messages-handler.js'
 export async function SMARTCONTRACT() {
   try {
     const args = utils.argsToArray(arguments)
+    console.log(args, arguments)
 
     return new Promise((resolve) => {
     resolve( {

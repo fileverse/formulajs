@@ -2,7 +2,8 @@ import { z } from 'zod'
 
 const categories = ['protocols','yields','dex','fees']
 export const defillamaParamsSchema = z.object({
-  category: z.enum(categories)
+  category: z.enum(categories),
+  columnName: z.string().optional(),
 })
 
 export const CATEGORY_URLS = {

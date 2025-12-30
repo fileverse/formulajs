@@ -5,4 +5,5 @@ export const aaveParamsSchema = z.object({
   category:  z.enum(['tokens','markets']),
   param1:    z.string().nonempty(),
   param2:    z.string().optional(),
+  columnName: z.string().optional(),
 })

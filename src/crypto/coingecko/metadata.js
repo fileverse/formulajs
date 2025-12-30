@@ -26,6 +26,13 @@ export const COINGECKO_metadata = {
       detail: `If "market" and "stablecoins" then eg. "1h", "24h", "7d", "14d", "30d", "200d", "1y".`,
       example: `"1h,24h,7d"`,
       require: 'o'
+    },
+            {
+      name: 'columnsName',
+      detail: 'Filter columns by name in output. Comma separated list.',
+      example: `"id,address"`,
+      require: 'o',
+      type: 'string'
     }
   ]
 }

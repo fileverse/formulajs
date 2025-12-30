@@ -5,4 +5,5 @@ export const uniswapParamsSchema = z.object({
   category:  z.enum(['tokens','markets']),
   param1:    z.string().nonempty(),
   param2:    z.string().optional(),
+  colummnName: z.string().optional(),
 })

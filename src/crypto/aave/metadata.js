@@ -28,6 +28,13 @@ export const AAVE_metadata = {
       example: `"USDT"`,
       require: 'm',
       type: 'string'
+    },
+    {
+      name: 'columnsName',
+      detail: 'Filter columns by name in output. Comma separated list.',
+      example: `"balance"`,
+      require: 'o',
+      type: 'string'
     }
   ]
 }
