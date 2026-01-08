@@ -1,3 +1,4 @@
+import { de } from 'zod/v4/locales'
 import { SERVICES_API_KEY } from '../../utils/constants.js'
 
 export const EOA_metadata = {
@@ -66,5 +67,14 @@ export const EOA_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'EOA',
+    argumentString: '"vitalik.eth", "txns", "ethereum", \"01/01/2023\", \"01/05/2024\", 1, 2',
+    description: 'returns the transaction history for the address vitalik.eth on the Ethereum blockchain between January 1, 2023 and January 5, 2024, returning page 1 with 2 transactions per page.'
+  }, {
+    title: 'EOA',
+    argumentString: '"vitalik.eth", "balance", "gnosis"',
+    description: 'returns the balance for the address vitalik.eth on the Gnosis blockchain.'
+  }]
 }

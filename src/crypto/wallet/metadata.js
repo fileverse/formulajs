@@ -1,3 +1,5 @@
+import { de } from "zod/v4/locales";
+
 export const WALLET_metadata = {
     n: 'WALLET',
     t: 20,
@@ -32,5 +34,15 @@ export const WALLET_metadata = {
             require: 'o',
             type: 'string'
         },
-    ]
+    ],
+    examples: [{
+    title: 'WALLET',
+    argumentString: '"0x7FD624f3f97A7dd36195E8379F28dB6147C270ff", "ethereum", "txns", "17520"',
+    description: 'returns transactions for the specified wallet address on the Ethereum chain within the last 17520 hours (approximately 2 years).'
+  },
+  {
+    title: 'WALLET',
+    argumentString: '"vitalik.eth", "base", "balance"',
+    description: 'returns the latest balance for the address vitalik.eth on the Base chain.'
+  }]
 }

@@ -11,5 +11,14 @@ export const YIELD_metadata = {
         require: 'm',
         type: 'string'
         }
-    ]
+    ],
+    examples: [{
+    title: 'YIELD',
+    argumentString: '"stablecoins"',
+    description: 'returns yield data for stablecoins.'
+  },{
+    title: 'YIELD',
+    argumentString: '"all"',
+    description: 'returns yield data for all categories.'
+  }]
 }

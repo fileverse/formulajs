@@ -1,3 +1,5 @@
+import { de } from "zod/v4/locales";
+
 export const TALLY_metadata = {
   LOGO: "https://www.tally.xyz/favicon.ico",
   BRAND_COLOR: "#f9f8ff",
@@ -21,5 +23,14 @@ export const TALLY_metadata = {
       require: 'm',
       type: 'string'
     },
-  ]
+  ],
+  examples: [{
+    title: 'TALLY',
+    argumentString: '"organization", "arbitrum"',
+    description: 'returns details about the Arbitrum organization from Tally.'
+  },{
+    title: 'TALLY',
+    argumentString: '"proposals", "aave"',
+    description: 'returns proposals for the Aave organization from Tally.'
+  }]
 }

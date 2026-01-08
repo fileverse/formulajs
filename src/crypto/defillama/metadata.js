@@ -1,3 +1,4 @@
+import { de } from 'zod/v4/locales'
 import { SERVICES_API_KEY } from '../../utils/constants.js'
 export const DEFILLAMA_metadata = {
   API_KEY: SERVICES_API_KEY.Defillama,
@@ -6,7 +7,7 @@ export const DEFILLAMA_metadata = {
   BRAND_SECONDARY_COLOR: '#855dcd',
   n: 'DEFILLAMA',
   t: 20,
-  d: 'Fetches content from Defillama.',
+  d: 'returns content from Defillama.',
   a: 'Retrieves data from Defillama.',
   p: [
     {
@@ -23,5 +24,14 @@ export const DEFILLAMA_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'DEFILLAMA',
+    argumentString: '"protocols"',
+    description: 'returns a list of DeFi protocols from Defillama.'
+  }, {
+    title: 'DEFILLAMA',
+    argumentString: '"dex"',
+    description: 'returns decentralized exchange (DEX) data from Defillama.'
+  }]
 }

@@ -36,5 +36,16 @@ export const AAVE_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'AAVE',
+    argumentString: '"v2", "tokens", "USDT"',
+    description: 'returns list data for the USDT token from Aave V2.'
+  },
+  {
+    title: 'AAVE',
+    argumentString: '"v2-raw", "markets", "AAVE"',
+    description: 'returns list data for the AAVE token from Aave V2.'
+  }
+]
 }

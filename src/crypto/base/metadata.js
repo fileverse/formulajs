@@ -58,5 +58,15 @@ export const BASE_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'BASE',
+    argumentString: '"token-txns", "0x7FD624f3f97A7dd36195E8379F28dB6147C270ff", \"01/01/2024\", \"07/07/2024\", 1, 2',
+    description: 'returns list ofERC-20 token transfer history for the specified address on the Base network between January 1, 2024 and July 7, 2024, returning page 1 with 2 results per page.'
+  },
+{
+    title: 'BASE',
+    argumentString: '"gas"',
+    description: 'returns gas price metrics for the Base network.'
+}]
 }

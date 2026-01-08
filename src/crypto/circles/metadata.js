@@ -31,5 +31,14 @@ export const CIRCLES_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'CIRCLES',
+    argumentString: '"trust", "0xe9A6378d8FD4983C2999DB0735f258397E8C2253"',
+    description: 'returns the trust relationships for the specified Circles address.'
+  }, {
+    title: 'CIRCLES',
+    argumentString: '"transactions", "0xe9A6378d8FD4983C2999DB0735f258397E8C2253", 5',
+    description: 'returns the last 5 transactions for the specified Circles address.'
+  }]
 }

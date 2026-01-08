@@ -1,3 +1,5 @@
+import { de } from "zod/v4/locales";
+
 export const PRICE_metadata = {
     n: 'PRICE',
     t: 20,
@@ -25,5 +27,15 @@ export const PRICE_metadata = {
             require: 'o',
             type: 'string'
         }
-    ]
+    ],
+    examples: [{
+    title: 'PRICE',
+    argumentString: '"0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca", "base", "1,24"',
+    description: 'returns the price of the specified token on the Base chain with 1-hour and 24-hour historical offsets.'
+  },
+  {
+    title: 'PRICE',
+    argumentString: '"ETH,BTC", "1,24,168"',
+    description: 'returns the prices of ETH and BTC with 1-hour, 24-hour, and 168-hour (7-day) historical offsets.'
+  }]
 }

@@ -1,3 +1,4 @@
+import { de } from 'zod/v4/locales'
 import { SERVICES_API_KEY } from '../../utils/constants.js'
 export const SAFE_metadata = {
   API_KEY: SERVICES_API_KEY.Safe,
@@ -41,5 +42,14 @@ export const SAFE_metadata = {
       require: 'o',
       repeat: 'n'
     }
-  ]
+  ],
+  examples: [{
+    title: 'SAFE',
+    argumentString: '"0xe9A6378d8FD4983C2999DB0735f258397E8C2253", "txns", "gnosis", 10, 0',
+    description: 'returns the last 10 transactions for the specified Safe address on the Gnosis chain.'
+  },{
+    title: 'SAFE',
+    argumentString: '"0x1234567890abcdef1234567890abcdef12345678", "txns", "ethereum"',
+    description: 'returns the last 100 transactions for the specified Safe address on the Ethereum chain.'
+  }]
 }
