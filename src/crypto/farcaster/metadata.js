@@ -39,5 +39,15 @@ export const FARCASTER_metadata =   {
         require: 'o',
         type: 'number'
       }
-    ]
+    ],
+    examples: [{
+    title: 'FARCASTER',
+    argumentString: '"posts", "miroyato"',
+    description: 'returns posts made by the user with the username miroyato.'
+  },
+  {
+    title: 'FARCASTER',
+    argumentString: '"replies", "0x123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz890abc123d"',
+    description: 'returns replies to the post with the specified hash.'
+  }]
   }

@@ -1,3 +1,5 @@
+import { de } from "zod/v4/locales";
+
 export const UNISWAP_metadata = {
   LOGO: 'https://app.uniswap.org/favicon.png',
   BRAND_COLOR: '#fef5fc',
@@ -35,5 +37,15 @@ export const UNISWAP_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'UNISWAP',
+    argumentString: '"v3", "tokens", "eth"',
+    description: 'returns data for the ETH token from Uniswap V3.'
+  },
+  {
+    title: 'UNISWAP',
+    argumentString: '"v3-raw", "markets", "0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8"',
+    description: 'returns data for the Uniswap V3 market with the specified contract address.'
+  }]
 }

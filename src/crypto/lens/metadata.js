@@ -1,3 +1,4 @@
+import { de } from "zod/v4/locales";
 import { SERVICES_API_KEY } from "../../utils/constants.js";
 
 export const LENS_metadata = {
@@ -39,5 +40,15 @@ export const LENS_metadata = {
         require: 'o',
         type: 'number'
       }
-    ]
+    ],
+    examples: [{
+    title: 'LENS',
+    argumentString: '"posts", "toka,miroyato"',
+    description: 'returns posts made by the users with the usernames toka and miroyato on Lens.'
+  },
+  {
+    title: 'LENS',
+    argumentString: '"replies", "0x123abc456def789ghi012jkl345mno678pqr901stu234vwx567yz890abc123d"',
+    description: 'returns replies to the post with the specified hash on Lens.'
+  }]
   }

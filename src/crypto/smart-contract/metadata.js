@@ -1,29 +1,32 @@
 export const SMARTCONTRACT_metadata = {
     n: 'SMARTCONTRACT',
     t: 20,
-    d: 'Query smart contracts in cells.',
-    r: 'Call a read-only function on a given smart contract',
+    d: 'Query smart contract in cells. Returning a list of available functions and arguments that you can use to get data.',
+    r: 'Query smart contract in cells. Returning a list of available functions and arguments that you can use to get data.',
     p: [
         {
-            name: 'contractName',
-            detail: 'Name of the contract you want to pull data from',
-            example: '"USDC"',
+            name: 'contract_address',
+            detail: 'Address of the contract you want to query',
+            example: '"0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"',
             require: 'm',
             type: 'string'
         },
         {
-            name: 'functionName',
-            detail: 'Name of the function you want to call from the give contract',
-            example: '"balanceOf"',
+            name: 'chain',
+            detail: 'Blockchain network(s) to query. Supported values: "ethereum", "gnosis", "base". Accepts comma-separated values.',
+            example: '"GNOSIS"',
             require: 'm',
             type: 'string'
-        },
-        {
-            name: '...functionArgs',
-            detail: 'Optional arguments to pass to the contract function.',
-            example: '"0x50Aa3435E310d5a2d15a989Bc353ce7f5682E1d4"',
-            require: 'o',
-            type: 'any'
         }
-    ]
+    ],
+    examples: [{
+        title: 'SMARTCONTRACT',
+        argumentString: '"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ETHEREUM"',
+        description: 'returns the list of functions and their arguments for Circle USDC contract on Ethereum.'
+    },
+    {
+        title: 'SMARTCONTRACT',
+        argumentString: '"0xdac17f958d2ee523a2206206994597c13d831ec7", "ETHEREUM"',
+        description: 'returns the list of functions and their arguments for Tether USD (USDT) contract on Ethereum.'
+    }]
 }

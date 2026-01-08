@@ -51,5 +51,15 @@ export const ETHERSCAN_metadata = {
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'ETHERSCAN',
+    argumentString: '"all-txns", "ethereum", "vitalik.eth"',
+    description: 'returns the complete transaction history for the address vitalik.eth on the Ethereum blockchain.'
+  },
+  {
+    title: 'ETHERSCAN',
+    argumentString: '"token-txns", "gnosis", "vitalik.eth", \"01/01/2024\", \"01/05/2024\"',
+    description: 'returns the token transaction history for the address vitalik.eth on the Gnosis blockchain between January 1, 2024 and January 5, 2024.'
+  }]
 }

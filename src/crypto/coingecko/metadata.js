@@ -27,12 +27,22 @@ export const COINGECKO_metadata = {
       example: `"1h,24h,7d"`,
       require: 'o'
     },
-            {
+    {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
       example: `"id,address"`,
       require: 'o',
       type: 'string'
     }
-  ]
+  ],
+  examples: [{
+    title: 'COINGECKO',
+    argumentString: '"stablecoins", "yield-bearing-stablecoins", "1h,24h,7d"',
+    description: "returns the yield-bearing stablecoins with percentage changes over 1 hour, 24 hours, and 7 days."
+  },
+  {
+    title: 'COINGECKO',
+    argumentString: '"derivatives", "binance_futures"',
+    description: "returns the derivatives data from the Binance Futures exchange."
+  }]
 }

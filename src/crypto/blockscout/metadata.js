@@ -58,5 +58,14 @@ export const BLOCKSCOUT_metadata = {
       repeat: 'n',
       type: 'rangenumber'
     }
-  ]
+  ],
+  examples: [{
+    title: 'BLOCKSCOUT',
+    argumentString: '"vitalik.eth", "txns", "ethereum", \"01/01/2023\", \"01/05/2024\", 1, 2',
+    description: 'returns transaction history for the address vitalik.eth on the Ethereum blockchain between January 1, 2023 and January 5, 2024, returning page 1 with 2 transactions per page.'
+  }, {
+    title: 'BLOCKSCOUT',
+    argumentString: '"vitalik.eth", "balance", "gnosis"',
+    description: 'returns the balance for the address vitalik.eth on the Gnosis blockchain.'
+  }]
 }

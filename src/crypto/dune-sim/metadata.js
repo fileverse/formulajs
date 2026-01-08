@@ -1,3 +1,4 @@
+import { de } from "zod/v4/locales";
 import { SERVICES_API_KEY } from "../../utils/constants.js";
 
 export const DUNESIM_metadata = {
@@ -49,4 +50,14 @@ export const DUNESIM_metadata = {
       type: 'number',
     },
   ],
+  examples: [{
+    title: 'DUNE',
+    argumentString: '"price", "base", 1, "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca", 5',
+    description: 'returns the price of the specified token on the Base chain with a 1-hour historical offset, limiting results to 5 entries.'
+  },
+  {
+    title: 'DUNE',
+    argumentString: '"activity", "vitalik.eth", "eth", 10',
+    description: 'returns the latest 10 wallet activities for the address vitalik.eth on the Ethereum chain.'
+  }]
 };

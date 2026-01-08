@@ -51,5 +51,14 @@ export const GNOSIS_metadata = {
       require: 'o',
       type: 'number'
     }
-  ]
+  ],
+  examples: [{
+    title: 'GNOSIS',
+    argumentString: '"nft-txns", "0x90830Ed558f12D826370DC52E9D87947A7F18De9", "01/01/2024", "14/06/2025", 1, 50',
+    description: 'returns NFT transaction history for the address 0x90830Ed558f12D826370DC52E9D87947A7F18De9 on the Gnosis Chain between January 1, 2024 and June 14, 2025, returning page 1 with 50 transactions per page.'
+  }, {
+    title: 'GNOSIS',
+    argumentString: '"gas"',
+    description: 'returns current gas price metrics for the Gnosis Chain.'
+  }]
 }

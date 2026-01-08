@@ -1,3 +1,4 @@
+import { de } from "zod/v4/locales";
 import { SERVICES_API_KEY } from "../../utils/constants.js";
 
 export const Neynar_metadata =   {
@@ -17,5 +18,14 @@ export const Neynar_metadata =   {
         require: 'm',
         type: 'number'
       }
-    ]
+    ],
+    examples: [{
+    title: 'NEYNAR',
+    argumentString: '"miroyato"',
+    description: 'returns followers for the Farcaster user with the username miroyato.'
+  },{
+    title: 'NEYNAR',
+    argumentString: '"alice"',
+    description: 'returns followers for the Farcaster user with the username alice.'
+  }]
   }

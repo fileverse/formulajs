@@ -46,5 +46,15 @@ export const FIREFLY_metadata =   {
         require: 'o',
         type: 'number'
       }
-    ]
+    ],
+    examples: [{
+    title: 'FIREFLY',
+    argumentString: '"farcaster", "posts", "miroyato"',
+    description: 'returns posts made by the user with the username miroyato on Farcaster.'
+  },
+  {
+    title: 'FIREFLY',
+    argumentString: '"lens", "posts", "toka"',
+    description: 'returns posts made by the user with the username toka on Lens.'
+  }]
   }
