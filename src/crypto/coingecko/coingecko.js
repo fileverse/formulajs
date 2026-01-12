@@ -11,7 +11,7 @@ import { coingeckoParamsSchema } from './coingecko-schema.js'
 
 export async function COINGECKO() {
   try {
-    const [category, param1, param2, columnName = null] = utils.argsToArray(arguments)
+    const [category, param1, param2, columnName] = utils.argsToArray(arguments)
     validateParams(coingeckoParamsSchema, { category, param1, param2, columnName })
 
     const apiKey = window.localStorage.getItem(SERVICES_API_KEY.Coingecko)

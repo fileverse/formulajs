@@ -44,7 +44,7 @@ export const ETHERSCAN_metadata = {
       require: 'o',
       type: 'string'
     },
-            {
+    {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
       example: `"id,address"`,
