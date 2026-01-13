@@ -31,12 +31,16 @@ export async function AAVE() {
       return json.map(item => {
         const flat = {}
         Object.entries(item).forEach(([k, v]) => {
-          if ((columnName && filterColumnName.includes(k)) && (v === null || typeof v !== 'object')) flat[k] = v
+          if (columnName) {
+            if (filterColumnName.includes(k) && (v === null || typeof v !== 'object')) flat[k] = v
+          } else {
+            if (v === null || typeof v !== 'object') flat[k] = v
+          }
         })
         return flat
       })
     }
-    if(columnName && typeof json === 'object') {
+    if (columnName && typeof json === 'object') {
       const data = {}
       filterColumnName.forEach(k => {
         data[k] = json[k]
