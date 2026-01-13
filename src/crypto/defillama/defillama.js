@@ -30,7 +30,7 @@ export async function DEFILLAMA() {
     const filterColumnName = columnName?.split(',').map(s => s.trim());
 
     return (Array.isArray(json) ? json : [json]).map(item => {
-       if (!filterColumnName) return item
+       if (!columnName) return item
       const out = {}
       for (const [k, v] of Object.entries(item)) {
         if ((columnName && filterColumnName.includes(k)) && (v === null || typeof v !== 'object')) out[k] = v

@@ -14,7 +14,7 @@ export const YIELD_metadata = {
     {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"id,address"`,
+      example: `"project,symbol"`,
       require: 'o',
       type: 'string'
     }

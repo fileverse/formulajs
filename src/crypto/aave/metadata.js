@@ -32,7 +32,7 @@ export const AAVE_metadata = {
     {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"balance"`,
+      example: `"id,name"`,
       require: 'o',
       type: 'string'
     }

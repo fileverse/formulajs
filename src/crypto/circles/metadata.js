@@ -27,7 +27,7 @@ export const CIRCLES_metadata = {
             {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"id,address"`,
+      example: `"address"`,
       require: 'o',
       type: 'string'
     }

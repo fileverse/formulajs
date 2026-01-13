@@ -63,7 +63,7 @@ export const EOA_metadata = {
             {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"id,address"`,
+      example: `"address,blockNumber"`,
       require: 'o',
       type: 'string'
     }

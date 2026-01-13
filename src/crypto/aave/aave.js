@@ -6,10 +6,10 @@ import { NetworkError } from "../../utils/error-instances.js"
 export async function AAVE() {
   try {
 
-    const [graphType, category, param1, param2, columnName] = utils.argsToArray(arguments)
+    const [graphType, category, param1, columnName] = utils.argsToArray(arguments)
 
 
-    validateParams(aaveParamsSchema, { graphType, category, param1, param2, columnName })
+    validateParams(aaveParamsSchema, { graphType, category, param1, columnName })
 
     const baseUrl = 'https://onchain-proxy.fileverse.io/third-party'
     const url =
@@ -17,8 +17,7 @@ export async function AAVE() {
       `?service=aave` +
       `&graphType=${encodeURIComponent(graphType)}` +
       `&category=${encodeURIComponent(category)}` +
-      `&input1=${encodeURIComponent(param1)}` +
-      (param2 ? `&input2=${encodeURIComponent(param2)}` : '')
+      `&input1=${encodeURIComponent(param1)}`;
 
     const res = await fetch(url)
     if (!res.ok) {
@@ -32,12 +31,16 @@ export async function AAVE() {
       return json.map(item => {
         const flat = {}
         Object.entries(item).forEach(([k, v]) => {
-          if ((columnName && filterColumnName.includes(k)) && (v === null || typeof v !== 'object')) flat[k] = v
+          if (columnName) {
+            if (filterColumnName.includes(k) && (v === null || typeof v !== 'object')) flat[k] = v
+          } else {
+            if (v === null || typeof v !== 'object') flat[k] = v
+          }
         })
         return flat
       })
     }
-    if(columnName && typeof json === 'object') {
+    if (columnName && typeof json === 'object') {
       const data = {}
       filterColumnName.forEach(k => {
         data[k] = json[k]
