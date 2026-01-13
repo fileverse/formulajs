@@ -30,7 +30,7 @@ export const COINGECKO_metadata = {
     {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"id,address"`,
+      example: `"id,symbol"`,
       require: 'o',
       type: 'string'
     }

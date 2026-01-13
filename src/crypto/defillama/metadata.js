@@ -20,7 +20,7 @@ export const DEFILLAMA_metadata = {
             {
       name: 'columnsName',
       detail: 'Filter columns by name in output. Comma separated list.',
-      example: `"id,address"`,
+      example: `"name,address"`,
       require: 'o',
       type: 'string'
     }

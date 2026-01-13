@@ -32,6 +32,7 @@ export async function UNISWAP() {
     if (Array.isArray(json)) {
       // flatten nested
       return json.map(item => {
+        if (!columnName) return item;
         const flat = {}
         Object.entries(item).forEach(([k, v]) => {
           if ((columnName && filterColumnName.includes(k)) && (v === null || typeof v !== 'object')) flat[k] = v
