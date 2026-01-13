@@ -6,7 +6,7 @@ import { NetworkError, ValidationError } from "../../utils/error-instances.js"
 
 export async function DEFILLAMA() {
   try {
-    const [category, columnName = null] = utils.argsToArray(arguments)
+    const [category, columnName] = utils.argsToArray(arguments);
     validateParams(defillamaParamsSchema, { category, columnName })
     const url = CATEGORY_URLS[category]
     if (!url) throw new ValidationError(`Invalid category: ${category}`)
@@ -30,6 +30,7 @@ export async function DEFILLAMA() {
     const filterColumnName = columnName?.split(',').map(s => s.trim());
 
     return (Array.isArray(json) ? json : [json]).map(item => {
+       if (!filterColumnName) return item
       const out = {}
       for (const [k, v] of Object.entries(item)) {
         if ((columnName && filterColumnName.includes(k)) && (v === null || typeof v !== 'object')) out[k] = v

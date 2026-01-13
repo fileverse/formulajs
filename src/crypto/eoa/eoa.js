@@ -14,7 +14,7 @@ import { toTimestamp } from '../../utils/toTimestamp.js'
 
 export async function EOA() {
   try {
-    const [addresses, category, chains, startTime, endTime, page = 1, offset = 10, columnName = null] =
+    const [addresses, category, chains, startTime, endTime, page = 1, offset = 10, columnName] =
       utils.argsToArray(arguments)
     validateParams(eoaParamsSchema, { addresses, category, chains, startTime, endTime, page, offset, columnName })
 

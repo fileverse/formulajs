@@ -13,7 +13,7 @@ import { etherscanParamsSchema } from './etherscan-schema.js'
 
 export async function ETHERSCAN() {
   try {
-    const [type, chain, address, startDate, endDate, page = 1, limit = 10, columnName = null] =
+    const [type, chain, address, startDate, endDate, page = 1, limit = 10, columnName] =
       utils.argsToArray(arguments)
 
 
