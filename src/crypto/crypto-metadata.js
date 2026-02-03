@@ -9,10 +9,7 @@ import { PNL_metadata } from './pnl/metadata.js'
 import { SAFE_metadata } from './safe/metadata.js'
 import { BLOCKSCOUT_metadata } from './blockscout/metadata.js'
 import { AAVE_metadata } from './aave/metadata.js'
-import { LENS_metadata } from './lens/metadata.js'
-import { FARCASTER_metadata } from './farcaster/metadata.js'
 import { FIREFLY_metadata } from './firefly/metadata.js'
-import { Neynar_metadata } from './neynar/metadata.js'
 import { SMARTCONTRACT_metadata } from './smart-contract/metadata.js'
 import { TALLY_metadata } from './tally/metadata.js'
 import { DUNESIM_metadata } from './dune-sim/metadata.js'
@@ -34,10 +31,7 @@ export const FUNCTION_LOCALE = [
   SAFE_metadata,
   BLOCKSCOUT_metadata,
   AAVE_metadata,
-  LENS_metadata,
-  FARCASTER_metadata,
   FIREFLY_metadata,
-  Neynar_metadata,
   SMARTCONTRACT_metadata,
   TALLY_metadata,
   DUNESIM_metadata,
