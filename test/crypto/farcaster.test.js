@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { FARCASTER } from '../../src/crypto.js'
+import { FARCASTER } from '../../src/crypto/farcaster/farcaster.js'
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 
 describe('FARCASTER', () => {
@@ -71,20 +71,19 @@ describe('FARCASTER', () => {
     window.localStorage.getItem.returns('key')
     global.fetch.resolves({
       ok: true,
-      json: async () => ({ data: [{ id:1, text:'hi', extra:null, nested:{a:1} }] })
+      json: async () => ({ data: [{ id: 1, text: 'hi', extra: null, nested: { a: 1 } }] })
     })
     const result = await FARCASTER('posts', 'xyz')
-    expect(result[0]).to.include({ id:1, text:'hi', platform:'farcaster' })
+    expect(result[0]).to.include({ id: 1, text: 'hi', platform: 'farcaster' })
     expect(result[0]).to.not.have.property('nested')
   })
 
-
   it('should include start and end in query string', async () => {
     window.localStorage.getItem.returns('key')
-    const fetchStub = global.fetch.resolves({ ok:true, json:async()=>({data:[]}) })
-    await FARCASTER('posts','xyz',2,5)
+    const fetchStub = global.fetch.resolves({ ok: true, json: async () => ({ data: [] }) })
+    await FARCASTER('posts', 'xyz', 2, 5)
     const url = new URL(fetchStub.firstCall.args[0])
     expect(url.searchParams.get('start')).to.equal('2')
     expect(url.searchParams.get('end')).to.equal('5')
   })
-});
+})

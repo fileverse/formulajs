@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { NEYNAR } from '../../src/crypto.js'
+import { NEYNAR } from '../../src/crypto/neynar/neynar.js'
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 import * as fromUsernameToFidUtil from '../../src/utils/from-username-to-fid.js'
 
@@ -62,7 +62,14 @@ describe('NEYNAR', () => {
   it('should map users correctly when response contains data', async () => {
     sinon.stub(fromUsernameToFidUtil.default, 'fromUsernameToFid').resolves('fid123')
     const users = [
-      { user: { username: 'bob', custody_address: '0x1', follower_count: 10, profile: { location: { address: { country: 'US', city: 'NY' } } } } },
+      {
+        user: {
+          username: 'bob',
+          custody_address: '0x1',
+          follower_count: 10,
+          profile: { location: { address: { country: 'US', city: 'NY' } } }
+        }
+      },
       { user: { username: 'carol', custody_address: '0x2', follower_count: 5 } }
     ]
     global.fetch.resolves({ ok: true, json: async () => ({ users }) })
