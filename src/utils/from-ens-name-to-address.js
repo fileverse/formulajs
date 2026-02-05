@@ -2,18 +2,15 @@
 /* global window */
 /* global ethers */
 
-
-
-import {UTILITY} from './constants.js'
+import { UTILITY } from './constants.js'
 import { ValidationError } from './error-instances.js'
 import * as isAddressUtil from './is-address.js'
-
 
 async function fromEnsNameToAddress(name) {
   if (typeof ethers === 'undefined') {
     await new Promise((resolve, reject) => {
       const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/ethers@6.10.0/dist/ethers.umd.min.js'
+      script.src = 'https://cdn.jsdelivr.net/npm/ethers@6.16.0/dist/ethers.umd.min.js'
       script.onload = resolve
       script.onerror = reject
       document.head.appendChild(script)
@@ -36,11 +33,11 @@ async function fromEnsNameToAddress(name) {
   }
 }
 const validateAndGetAddress = async (address) => {
-if(isAddressUtil.default.isAddress(address)) return address
+  if (isAddressUtil.default.isAddress(address)) return address
 
-const resolvedAddress = await fromEnsNameToAddress(address)
-if(resolvedAddress) return resolvedAddress
-throw new ValidationError("Invalid address")
+  const resolvedAddress = await fromEnsNameToAddress(address)
+  if (resolvedAddress) return resolvedAddress
+  throw new ValidationError('Invalid address')
 }
 
 export default {
