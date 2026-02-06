@@ -1821,6 +1821,31 @@ export function MINUS() {
 }
 
 /**
+ * Multiplies two numbers.
+ *
+ * Category: Math and trigonometry
+ *
+ * @param {*} factor1 The first number to multiply.
+ * @param {*} factor2 The second number to multiply.
+ * @returns
+ */
+export function MULTIPLY(factor1, factor2) {
+  if (arguments.length !== 2) {
+    return error.na
+  }
+
+  factor1 = utils.parseNumber(factor1)
+  factor2 = utils.parseNumber(factor2)
+  const anyError = utils.anyError(factor1, factor2)
+
+  if (anyError) {
+    return anyError
+  }
+
+  return factor1 * factor2
+}
+
+/**
  * Adds the values specified by a given criteria.
  *
  * Category: Math and trigonometry
