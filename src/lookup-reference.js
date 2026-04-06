@@ -473,6 +473,9 @@ export function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup) 
   return result
 }
 
+/**
+ * @param isColV When "true", returns the matched column (value at match index from each row of result_range). When false/omitted, returns the matched row (one row from result_range).
+ */
 export function XLOOKUP(search_key, lookup_range, result_range, isColV, missing_value,match_mode, search_mode) {
   let isCol = isColV === "true" ? true : false
   
@@ -509,29 +512,35 @@ result_array.map((row) => {
   })
   
   // Set default parameter values Error: Didn't find value in XLOOKUP evaluation
-  missing_value = missing_value !== undefined ? missing_value : new Error("not_found")
+  missing_value = missing_value !== undefined ? missing_value : new Error(`Did not find value ${search_key} in XLOOKUP evaluation.`)
   match_mode = match_mode !== undefined ? match_mode : 0
   search_mode = search_mode !== undefined ? search_mode : 1
   isCol = isCol !== undefined ? isCol : false
-  
+
   // Validate match_mode
   if (![0, 1, -1, 2].includes(match_mode)) {
     return new Error('match_mode_must')
   }
-  
+
   // Validate search_mode
   if (![1, -1, 2, -2].includes(search_mode)) {
     return new Error('search_mode_must')
   }
-  
+
   // Validate binary search requirements
   if (Math.abs(search_mode) === 2 && match_mode === 2) {
     return new Error('binary_search_and_wildcard')
   }
-    
-  let res = performLookup(search_key, lookup_array, result_array, missing_value, match_mode, search_mode, isCol);
-  res = isCol ? Array.isArray(res)?res.map((item) => [item.toString()]):res : [res];
-  return res
+
+  const res = performLookup(search_key, lookup_array, result_array, missing_value, match_mode, search_mode, isCol)
+  // If not found (or missing_value), return the error/value as-is — do not wrap in array
+  if (res instanceof Error) {
+    return res
+  }
+  // isCol: return column at match index from each row (array of single-cell arrays). Else: return matched row as single row array.
+  return isCol
+    ? (Array.isArray(res) ? res.map((item) => [item.toString()]) : res)
+    : [res]
 }
 
 function normalizeLookupRange(lookup_range) {
