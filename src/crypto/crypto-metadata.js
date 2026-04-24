@@ -38,9 +38,9 @@ export const FUNCTION_LOCALE = [
   PRICE_metadata,
   WALLET_metadata,
   YIELD_metadata,
-  CIRCLES_metadata,
+  CIRCLES_metadata
   // GNOSISPAY_metadata,
-  {
+  /*{
     LOGO: 'https://raw.githubusercontent.com/mritunjayz/github-storage/refs/heads/main/ploymarket.png',
     n: 'POLYMARKET',
     t: 20,
@@ -87,5 +87,5 @@ export const FUNCTION_LOCALE = [
     d: 'Kawaiii, comming soon. Hello Keith! (Comming soon)',
     a: 'Kawaiii, comming soon. Hello Keith! (Comming soon)',
     p: []
-  }
+  }*/
 ]
