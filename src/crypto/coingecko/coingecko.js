@@ -24,7 +24,9 @@ export async function COINGECKO() {
     switch (category?.toLowerCase?.()) {
       case 'price': {
         const vs = param2 || 'usd'
-        url = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=${vs}&symbols=${param1}`
+        // CoinGecko /simple/price?symbols= currently returns {} on public/demo APIs.
+        // Use coin ids instead (e.g. bitcoin, ethereum).
+        url = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=${vs}&ids=${param1}`
         break
       }
       case 'market': {
