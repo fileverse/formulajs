@@ -26,7 +26,7 @@ export async function FLVURL() {
   })
 }
 
-export function POLYMARKET() {
+/*export function POLYMARKET() {
   return 'Coming Soon'
 }
 
@@ -48,4 +48,4 @@ export function ARTEMIS() {
 
 export function MYANIMELIST() {
   return 'Coming Soon'
-}
+}*/
