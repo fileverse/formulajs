@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { SAFE } from '../../src/crypto.js';
+import { SAFE } from '../../src/crypto/safe/safe.js';
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
 import * as isAddressUtil from '../../src/utils/is-address.js';
 import * as fromEnsNameToAddressUtil from '../../src/utils/from-ens-name-to-address.js';

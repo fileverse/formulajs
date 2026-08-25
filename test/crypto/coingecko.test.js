@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { COINGECKO } from '../../src/crypto.js'
+import { COINGECKO } from '../../src/crypto/coingecko/coingecko.js'
 import { ERROR_MESSAGES_FLAG, SERVICES_API_KEY } from '../../src/utils/constants.js'
 
 

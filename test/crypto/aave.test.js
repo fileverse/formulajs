@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import * as crypto from '../../src/crypto.js'
+import * as crypto from '../../src/crypto/aave/aave.js'
 const { AAVE } = crypto
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 

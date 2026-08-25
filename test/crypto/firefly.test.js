@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { FIREFLY } from '../../src/crypto.js';
+import { FIREFLY } from '../../src/crypto/firefly/firefly.js';
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js';
 
 describe('FIREFLY', () => {

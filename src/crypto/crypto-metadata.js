@@ -1,44 +1,44 @@
 import { EOA_metadata } from './eoa/metadata.js'
-import { UNISWAP_metadata } from './uniswap/metadata.js'
-import { COINGECKO_metadata } from './coingecko/metadata.js'
-import { DEFILLAMA_metadata } from './defillama/metadata.js'
-import { BASE_metadata } from './base/metadata.js'
-import { GNOSIS_metadata } from './gnosis/metadata.js'
 import { ETHERSCAN_metadata } from './etherscan/metadata.js'
-import { PNL_metadata } from './pnl/metadata.js'
-import { SAFE_metadata } from './safe/metadata.js'
-import { BLOCKSCOUT_metadata } from './blockscout/metadata.js'
-import { AAVE_metadata } from './aave/metadata.js'
-import { FIREFLY_metadata } from './firefly/metadata.js'
-import { SMARTCONTRACT_metadata } from './smart-contract/metadata.js'
-import { TALLY_metadata } from './tally/metadata.js'
-import { DUNESIM_metadata } from './dune-sim/metadata.js'
-import { PRICE_metadata } from './price/metadata.js'
-import { WALLET_metadata } from './wallet/metadata.js'
-import { YIELD_metadata } from './yield/metadata.js'
-import { CIRCLES_metadata } from './circles/metadata.js'
+// import { UNISWAP_metadata } from './uniswap/metadata.js'
+// import { COINGECKO_metadata } from './coingecko/metadata.js'
+// import { DEFILLAMA_metadata } from './defillama/metadata.js'
+// import { BASE_metadata } from './base/metadata.js'
+// import { GNOSIS_metadata } from './gnosis/metadata.js'
+// import { PNL_metadata } from './pnl/metadata.js'
+// import { SAFE_metadata } from './safe/metadata.js'
+// import { BLOCKSCOUT_metadata } from './blockscout/metadata.js'
+// import { AAVE_metadata } from './aave/metadata.js'
+// import { FIREFLY_metadata } from './firefly/metadata.js'
+// import { SMARTCONTRACT_metadata } from './smart-contract/metadata.js'
+// import { TALLY_metadata } from './tally/metadata.js'
+// import { DUNESIM_metadata } from './dune-sim/metadata.js'
+// import { PRICE_metadata } from './price/metadata.js'
+// import { WALLET_metadata } from './wallet/metadata.js'
+// import { YIELD_metadata } from './yield/metadata.js'
+// import { CIRCLES_metadata } from './circles/metadata.js'
 // import { GNOSISPAY_metadata } from './gnosispay/metadata.js'
 
 export const FUNCTION_LOCALE = [
   EOA_metadata,
-  UNISWAP_metadata,
-  COINGECKO_metadata,
-  DEFILLAMA_metadata,
-  BASE_metadata,
-  GNOSIS_metadata,
-  ETHERSCAN_metadata,
-  PNL_metadata,
-  SAFE_metadata,
-  BLOCKSCOUT_metadata,
-  AAVE_metadata,
-  FIREFLY_metadata,
-  SMARTCONTRACT_metadata,
-  TALLY_metadata,
-  DUNESIM_metadata,
-  PRICE_metadata,
-  WALLET_metadata,
-  YIELD_metadata,
-  CIRCLES_metadata
+  ETHERSCAN_metadata
+  // UNISWAP_metadata,
+  // COINGECKO_metadata,
+  // DEFILLAMA_metadata,
+  // BASE_metadata,
+  // GNOSIS_metadata,
+  // PNL_metadata,
+  // SAFE_metadata,
+  // BLOCKSCOUT_metadata,
+  // AAVE_metadata,
+  // FIREFLY_metadata,
+  // SMARTCONTRACT_metadata,
+  // TALLY_metadata,
+  // DUNESIM_metadata,
+  // PRICE_metadata,
+  // WALLET_metadata,
+  // YIELD_metadata,
+  // CIRCLES_metadata
   // GNOSISPAY_metadata,
   /*{
     LOGO: 'https://raw.githubusercontent.com/mritunjayz/github-storage/refs/heads/main/ploymarket.png',

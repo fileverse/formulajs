@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-import { BASE } from '../../src/crypto.js'
+import { BASE } from '../../src/crypto/base/base.js'
 import { ERROR_MESSAGES_FLAG } from '../../src/utils/constants.js'
 import * as isAddressModule from '../../src/utils/is-address.js'
 import * as fromEnsNameToAddress from '../../src/utils/from-ens-name-to-address.js'
