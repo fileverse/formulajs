@@ -12,19 +12,23 @@ export const COINGECKO_metadata = {
     {
       name: 'category',
       detail: 'Query type: "price", "market", "stablecoins", or "derivatives".',
-      example: `"stablecoins"`,
+      example: `"price"`,
       require: 'm'
     },
     {
       name: 'param1',
-      detail: `If "price" then - eg. "BTC", "ETH", OR any token on coingecko\nIf "market": one of "all", "base", "meme", "aiagents", "bitcoin", "ethereum", "hyperliquid", "pump", "solana".\nIf "stablecoins": one of "all", "yield-bearing-stablecoins", "crypto-backed-stablecoin".\nIf "derivatives": exchange name (e.g., "binance_futures", "hyperliquid", "weex-futures", "bybit" ).`,
-      example: `"yield-bearing-stablecoins"`,
+      detail: `If "price" then - CoinGecko coin ids, eg. "bitcoin", "ethereum", "bitcoin,ethereum" (not ticker symbols like "btc").
+If "market": one of "all", "base", "meme", "aiagents", "bitcoin", "ethereum", "hyperliquid", "pump", "solana".
+If "stablecoins": one of "all", "yield-bearing-stablecoins", "crypto-backed-stablecoin".
+If "derivatives": exchange name (e.g., "binance_futures", "hyperliquid", "weex-futures", "bybit" ).`,
+      example: `"bitcoin"`,
       require: 'm'
     },
     {
       name: 'param2',
-      detail: `If "market" and "stablecoins" then eg. "1h", "24h", "7d", "14d", "30d", "200d", "1y".`,
-      example: `"1h,24h,7d"`,
+      detail: `If "price" then vs currency (default "usd"), eg. "usd", "eur".
+If "market" and "stablecoins" then eg. "1h", "24h", "7d", "14d", "30d", "200d", "1y".`,
+      example: `"usd"`,
       require: 'o'
     },
     {
@@ -35,14 +39,26 @@ export const COINGECKO_metadata = {
       type: 'string'
     }
   ],
-  examples: [{
-    title: 'COINGECKO',
-    argumentString: '"stablecoins", "yield-bearing-stablecoins", "1h,24h,7d"',
-    description: "returns the yield-bearing stablecoins with percentage changes over 1 hour, 24 hours, and 7 days."
-  },
-  {
-    title: 'COINGECKO',
-    argumentString: '"derivatives", "binance_futures"',
-    description: "returns the derivatives data from the Binance Futures exchange."
-  }]
+  examples: [
+    {
+      title: 'COINGECKO',
+      argumentString: '"price", "bitcoin"',
+      description: 'returns the current Bitcoin price in USD (e.g. BITCOIN_USD).'
+    },
+    {
+      title: 'COINGECKO',
+      argumentString: '"price", "bitcoin,ethereum", "usd"',
+      description: 'returns current Bitcoin and Ethereum prices in USD.'
+    },
+    {
+      title: 'COINGECKO',
+      argumentString: '"stablecoins", "yield-bearing-stablecoins", "1h,24h,7d"',
+      description: "returns the yield-bearing stablecoins with percentage changes over 1 hour, 24 hours, and 7 days."
+    },
+    {
+      title: 'COINGECKO',
+      argumentString: '"derivatives", "binance_futures"',
+      description: "returns the derivatives data from the Binance Futures exchange."
+    }
+  ]
 }
