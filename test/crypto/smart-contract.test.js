@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { SMARTCONTRACT } from '../../src/crypto.js'
+import { SMARTCONTRACT } from '../../src/crypto/smart-contract/smart-contract.js'
 
 describe('SMARTCONTRACT', () => {
   it('should return contractName, functionName and args', async () => {
